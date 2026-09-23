@@ -29601,8 +29601,12 @@ return heic2any;
     border:1px solid var(--grid-line); border-radius:var(--radius); padding:11px 13px; margin-bottom:16px;
   }
   .audit-bar .audit-info{flex:1; min-width:0;}
-  .audit-bar .audit-name{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .audit-bar .audit-sub{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); margin-top:2px;}
+  .audit-bar .audit-name{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; line-height:1.2; letter-spacing:0.005em;
+    color:var(--paper); overflow:hidden; word-break:break-word;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; /* long names wrap to 2 lines */
+  }
+  .audit-bar .audit-sub{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted); margin-top:4px;}
   .audit-bar button{
     font-family:'IBM Plex Mono',monospace; font-size:11px; padding:7px 10px; border-radius:var(--radius);
     border:1px solid var(--grid-line); background:var(--navy-panel-2); color:var(--paper); cursor:pointer; white-space:nowrap;
@@ -29798,7 +29802,7 @@ return heic2any;
 
 <div class="export-bar">
   <div class="wrap-inner">
-    <button class="btn-export" id="exportBtn" disabled>Export for Claude</button>
+    <button class="btn-export" id="exportBtn" disabled>Export Log</button>
     <button class="btn-export" id="clearBtn" style="background:transparent;color:var(--muted);border:1px solid var(--grid-line);">Clear all</button>
   </div>
 </div>
@@ -31055,7 +31059,7 @@ el('exportBtn').addEventListener('click', async ()=>{
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  el('exportBtn').textContent = 'Export for Claude';
+  el('exportBtn').textContent = 'Export Log';
   el('exportBtn').disabled = false;
 });
 
