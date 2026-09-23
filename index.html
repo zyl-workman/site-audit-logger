@@ -29394,8 +29394,19 @@ return heic2any;
   .photo-btn.library .pb-label{color:var(--muted); opacity:1;}
   .photo-btn.library:active{background:rgba(79,157,201,0.28);}
   @media (prefers-reduced-motion: reduce){ .photo-btn{transition:none;} .photo-btn:active{transform:none;} }
-  .photo-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .photo-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; padding-top:8px;}
   .photo-row:empty{display:none;}
+  .photo-item{position:relative; width:64px; height:64px;}
+  .photo-remove{
+    position:absolute; top:-8px; right:-8px; width:26px; height:26px; padding:0;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    background:var(--issues); color:var(--paper); border:2px solid var(--navy-panel); border-radius:50%;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  }
+  .photo-remove::after{content:''; position:absolute; inset:-8px;} /* bigger tap area */
+  .photo-remove svg{width:11px; height:11px;}
+  .photo-remove:active{filter:brightness(0.85);}
+  .photo-remove:focus-visible{outline:2px solid var(--paper); outline-offset:2px;}
   .photo-thumb{
     width:64px; height:64px; border-radius:var(--radius); object-fit:cover;
     border:1px solid var(--grid-line);
@@ -29511,7 +29522,43 @@ return heic2any;
     margin:8px 0 0; white-space:pre-wrap; word-break:break-word;
   }
   .entry-photos{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;}
-  .entry-photos img{width:48px; height:48px; object-fit:cover; border-radius:var(--radius); border:1px solid var(--grid-line);}
+  .entry-photos img{width:48px; height:48px; object-fit:cover; border-radius:var(--radius); border:1px solid var(--grid-line); cursor:zoom-in;}
+  .photo-thumb{cursor:zoom-in;}
+
+  /* ---- Photo preview (lightbox) ---- */
+  .lightbox{
+    position:fixed; inset:0; z-index:200; display:none; flex-direction:column;
+    background:#050a12;
+    padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+    touch-action:pan-y pinch-zoom;
+  }
+  .lightbox.open{display:flex;}
+  .lb-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px; flex:0 0 auto;
+  }
+  .lb-title{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; color:var(--paper);
+    min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .lb-count{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); margin-left:8px;}
+  .lb-close, .lb-nav{
+    display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+    width:44px; height:44px; border-radius:50%; flex:0 0 auto;
+    background:rgba(238,241,234,0.1); color:var(--paper); border:1px solid rgba(238,241,234,0.2);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lb-close svg, .lb-nav svg{width:18px; height:18px;}
+  .lb-close:active, .lb-nav:active{background:rgba(238,241,234,0.22);}
+  .lb-close:focus-visible, .lb-nav:focus-visible{outline:2px solid var(--copper); outline-offset:2px;}
+  .lb-stage{flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:0 12px; position:relative;}
+  .lb-stage img{max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; user-select:none; -webkit-user-drag:none;}
+  .lb-nav{position:absolute; top:50%; transform:translateY(-50%);}
+  .lb-nav.prev{left:10px;} .lb-nav.next{right:10px;}
+  .lb-nav[hidden]{display:none;}
+  .lb-dots{display:flex; justify-content:center; gap:6px; padding:12px 0 14px; flex:0 0 auto;}
+  .lb-dots span{width:7px; height:7px; border-radius:50%; background:rgba(238,241,234,0.25);}
+  .lb-dots span.on{background:var(--copper);}
   .entry-delete{
     background:none; border:none; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:10.5px;
     cursor:pointer; text-decoration:underline; padding:0;
@@ -29650,7 +29697,7 @@ return heic2any;
         <input type="text" id="biGlazing" placeholder="Glazing type" />
         <input type="text" id="biRoof" placeholder="Roof type" />
         <input type="text" id="biVacantFloors" placeholder="Vacant floor(s)" />
-        <input type="text" id="biOccupiedHours" placeholder="Occupied hours (e.g. Mon-Fri 08:00-18:00)" />
+        <input type="text" id="biOccupiedHours" placeholder="Occupied hours" />
         <textarea id="biRefurb" class="bi-full" placeholder="Refurbishment history (years, scope of works)"></textarea>
       </div>
       <div class="bi-saved" id="biSaved">Auto-saves as you type</div>
@@ -29695,7 +29742,7 @@ return heic2any;
     <div class="entry-id-row">
       <input type="text" id="asset" placeholder="Asset (e.g. AHU-3)" />
       <input type="text" id="entryNo" class="entry-no-input" placeholder="No." />
-      <input type="text" id="location" placeholder="Location (e.g. Roof plant room)" />
+      <input type="text" id="location" placeholder="Location" />
     </div>
     <textarea id="note" placeholder="What did you see? Make/model, age, condition, anything unusual..."></textarea>
 
@@ -29731,9 +29778,6 @@ return heic2any;
       <input type="file" id="libraryInput" accept="image/*" multiple />
     </div>
     <div class="photo-row" id="photoRow"></div>
-    <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); margin:-6px 0 12px;">
-      iPhone HEIC photos aren't supported yet — set your camera to JPG (Settings → Camera → Formats → Most Compatible) or convert before uploading.
-    </div>
 
     <button class="btn-primary" id="saveEntryBtn">Log entry</button>
     <button class="btn-cancel-edit" id="cancelEditBtn" style="display:none;">Cancel edit</button>
@@ -30001,10 +30045,24 @@ function resizeImage(file, maxWidth, quality){
 function renderPendingPhotos(){
   const row = el('photoRow');
   row.innerHTML = '';
-  pendingPhotos.forEach(src=>{
+  pendingPhotos.forEach((src, i)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'photo-item';
     const img = document.createElement('img');
-    img.src = src; img.className = 'photo-thumb';
-    row.appendChild(img);
+    img.src = src; img.className = 'photo-thumb'; img.alt = `Photo ${i+1}`;
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'photo-remove';
+    del.setAttribute('aria-label', `Remove photo ${i+1}`);
+    del.innerHTML = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    del.addEventListener('click', ()=>{
+      if(!confirm('Remove this photo from the entry?')) return;
+      pendingPhotos.splice(i, 1);
+      renderPendingPhotos();
+      saveDraft();
+    });
+    wrap.appendChild(img); wrap.appendChild(del);
+    row.appendChild(wrap);
   });
 }
 
@@ -30610,7 +30668,7 @@ function renderEntries(){
             </div>
             ${subLocation ? `<div class="entry-location">${escapeHtml(subLocation)}</div>` : ''}
           </div>
-          <span class="entry-id">${timeLabel} · #${entry.id.slice(-4)}</span>
+          <span class="entry-id">${timeLabel}</span>
         </div>
         ${entry.synced === false ? `<div class="entry-warning">⚠ Not saved to device — will be lost if you close this. <button class="retry-btn" data-id="${entry.id}">Retry save</button></div>` : ''}
         ${meterLine ? `<div class="entry-meter">${meterLine}</div>` : ''}
@@ -31014,6 +31072,108 @@ el('clearBtn').addEventListener('click', async ()=>{
 });
 
 initApp();
+</script>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo preview">
+  <div class="lb-bar">
+    <div class="lb-title"><span id="lbTitle"></span><span class="lb-count" id="lbCount"></span></div>
+    <button type="button" class="lb-close" id="lbClose" aria-label="Close preview">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="lb-stage" id="lbStage">
+    <button type="button" class="lb-nav prev" id="lbPrev" aria-label="Previous photo">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M7.5 2L3.5 6l4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <img id="lbImg" alt="" />
+    <button type="button" class="lb-nav next" id="lbNext" aria-label="Next photo">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="lb-dots" id="lbDots"></div>
+</div>
+<script>
+(function(){
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lbImg');
+  let photos = [], idx = 0, pushed = false, lastFocus = null;
+
+  function show(){
+    img.src = photos[idx];
+    img.alt = `Photo ${idx+1} of ${photos.length}`;
+    document.getElementById('lbCount').textContent = photos.length > 1 ? `${idx+1} / ${photos.length}` : '';
+    document.getElementById('lbPrev').hidden = photos.length < 2;
+    document.getElementById('lbNext').hidden = photos.length < 2;
+    document.getElementById('lbDots').innerHTML = photos.length > 1
+      ? photos.map((_,i)=>`<span class="${i===idx?'on':''}"></span>`).join('') : '';
+  }
+  function step(d){ if(photos.length < 2) return; idx = (idx + d + photos.length) % photos.length; show(); }
+
+  window.openPhotoPreview = function(list, start, title){
+    if(!list || !list.length) return;
+    photos = list; idx = start || 0; lastFocus = document.activeElement;
+    document.getElementById('lbTitle').textContent = title || 'Photo';
+    show();
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // So the phone's Back button / gesture closes the preview instead of leaving the app
+    try{ history.pushState({photoPreview:true}, ''); pushed = true; }catch(e){ pushed = false; }
+    document.getElementById('lbClose').focus();
+  };
+  function close(fromPop){
+    if(!lb.classList.contains('open')) return;
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    img.removeAttribute('src');
+    if(pushed && !fromPop){ pushed = false; try{ history.back(); }catch(e){} }
+    pushed = false;
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  document.getElementById('lbClose').addEventListener('click', ()=>close(false));
+  document.getElementById('lbPrev').addEventListener('click', (e)=>{ e.stopPropagation(); step(-1); });
+  document.getElementById('lbNext').addEventListener('click', (e)=>{ e.stopPropagation(); step(1); });
+  document.getElementById('lbStage').addEventListener('click', (e)=>{ if(e.target.id === 'lbStage') close(false); });
+  window.addEventListener('popstate', ()=>close(true));
+  document.addEventListener('keydown', (e)=>{
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') close(false);
+    else if(e.key === 'ArrowLeft') step(-1);
+    else if(e.key === 'ArrowRight') step(1);
+  });
+
+  // Swipe left/right to move between photos (ignored while pinch-zooming)
+  let sx = null, sy = null;
+  lb.addEventListener('touchstart', (e)=>{
+    if(e.touches.length !== 1){ sx = null; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  }, {passive:true});
+  lb.addEventListener('touchend', (e)=>{
+    if(sx === null) return;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    sx = null;
+    if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+  }, {passive:true});
+
+  // Tap a photo on a logged entry
+  document.getElementById('entriesList').addEventListener('click', (e)=>{
+    const t = e.target.closest('.entry-photos img');
+    if(!t) return;
+    const wrap = t.closest('.entry-photos');
+    const imgs = [...wrap.querySelectorAll('img')];
+    const card = t.closest('.entry');
+    const title = card ? [...card.querySelectorAll('.entry-title .asset, .entry-title .entry-no')]
+      .map(n=>n.textContent.trim()).filter(Boolean).join(' · ') : '';
+    openPhotoPreview(imgs.map(i=>i.src), imgs.indexOf(t), title || 'Photo');
+  });
+
+  // Tap a photo in the entry form (before logging, or while editing)
+  document.getElementById('photoRow').addEventListener('click', (e)=>{
+    const t = e.target.closest('.photo-thumb');
+    if(!t) return;
+    const imgs = [...document.querySelectorAll('#photoRow .photo-thumb')];
+    openPhotoPreview(imgs.map(i=>i.src), imgs.indexOf(t), 'New entry photo');
+  });
+})();
 </script>
 </body>
 </html>
