@@ -29240,13 +29240,19 @@ return heic2any;
     --cooling:#4f9dc9;
     --ventilation:#7fae6a;
     --dhw:#c9a63d;
+    --dcw:#8fd3e8;
     --controls:#9b8ad1;
     --electrical:#d9c25a;
+    --lighting:#d68bc4;
     --metering:#5fb8a8;
     --fabric:#b08968;
     --other:#8b9bb0;
     --issues:#c9524a;
     --questions:#7a9ec9;
+    --general:#a7b4c4;
+    --oi-open:#c97a3c;
+    --oi-asked:#4f9dc9;
+    --oi-answered:#7fae6a;
     --radius:2px;
   }
   *{box-sizing:border-box;}
@@ -29335,7 +29341,7 @@ return heic2any;
     margin-bottom:12px;
   }
 
-  select, textarea, input[type=text]{
+  select, textarea, input[type=text], input[type=email]{
     width:100%; background:var(--navy-panel-2); border:1px solid var(--grid-line); color:var(--paper);
     font-family:'Inter',sans-serif; font-size:14px; padding:11px 12px; border-radius:var(--radius);
     margin-bottom:10px;
@@ -29365,13 +29371,14 @@ return heic2any;
   .tag-btn[data-tag="Cooling"]{--cat:var(--cooling);}
   .tag-btn[data-tag="Ventilation"]{--cat:var(--ventilation);}
   .tag-btn[data-tag="DHW"]{--cat:var(--dhw);}
+  .tag-btn[data-tag="DCW"]{--cat:var(--dcw);}
   .tag-btn[data-tag="Controls"]{--cat:var(--controls);}
   .tag-btn[data-tag="Electrical"]{--cat:var(--electrical);}
+  .tag-btn[data-tag="Lighting"]{--cat:var(--lighting);}
   .tag-btn[data-tag="Metering"]{--cat:var(--metering);}
   .tag-btn[data-tag="Fabric"]{--cat:var(--fabric);}
   .tag-btn[data-tag="Other"]{--cat:var(--other);}
   .tag-btn[data-tag="Issues"]{--cat:var(--issues);}
-  .tag-btn[data-tag="Issues"]{grid-column:2;} /* keypad-style: sits centred under the 3x3, like the 0 key */
   @media (prefers-reduced-motion: reduce){ .tag-btn{transition:none;} .tag-btn:active{transform:none;} }
 
   .meter-fields{display:none;}
@@ -29647,6 +29654,119 @@ return heic2any;
   }
   .catalogue-item .ci-actions .ci-delete{color:var(--heating); border-color:rgba(217,112,75,0.3);}
   .catalogue-empty{text-align:center; padding:24px; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:12px;}
+
+  /* ---- Send to Open Items toggle (entry form) ---- */
+  .oi-toggle{
+    display:flex; align-items:center; gap:12px; cursor:pointer; margin:0 0 12px;
+    background:var(--navy-panel-2); border:1px solid var(--grid-line); border-radius:var(--radius);
+    padding:10px 12px; -webkit-tap-highlight-color:transparent;
+  }
+  .oi-toggle input{position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;}
+  .oi-toggle .switch{
+    flex:0 0 auto; width:40px; height:24px; border-radius:12px; position:relative;
+    background:rgba(238,241,234,0.12); border:1px solid var(--grid-line); transition:background .12s ease;
+  }
+  .oi-toggle .switch::after{
+    content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
+    background:var(--muted); transition:transform .12s ease, background .12s ease;
+  }
+  .oi-toggle input:checked + .switch{background:var(--oi-open); border-color:var(--oi-open);}
+  .oi-toggle input:checked + .switch::after{transform:translateX(16px); background:var(--navy-deep);}
+  .oi-toggle input:focus-visible + .switch{outline:2px solid var(--paper); outline-offset:2px;}
+  .oi-toggle .t-text{display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .oi-toggle .t-main{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px;}
+  .oi-toggle .t-sub{font-size:11.5px; color:var(--muted);}
+  .oi-toggle.on{border-color:color-mix(in srgb, var(--oi-open) 55%, transparent);}
+  @media (prefers-reduced-motion: reduce){ .oi-toggle .switch, .oi-toggle .switch::after{transition:none;} }
+
+  /* ---- Open Items / Outstanding Information panel ---- */
+  details.open-items{border-left:3px solid var(--oi-open);}
+  details.open-items summary{gap:10px;}
+  .oi-heading{display:flex; flex-direction:column; gap:2px; min-width:0; flex:1;}
+  .oi-heading .oi-title{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;}
+  .oi-heading .oi-subtitle{font-family:'Inter',sans-serif; font-weight:400; font-size:12px; color:var(--muted);}
+  .oi-count{
+    flex:0 0 auto; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
+    color:var(--navy-deep); background:var(--oi-open); border-radius:10px; padding:2px 9px;
+  }
+  .oi-count.zero{background:rgba(238,241,234,0.12); color:var(--muted);}
+  details.open-items summary .arrow{transition:transform .15s ease;}
+  details.open-items:not([open]) summary .arrow{transform:rotate(-90deg);}
+  .oi-body{padding:14px 16px 16px;}
+  .oi-field-label{display:block; font-size:11.5px; color:var(--muted); margin:0 0 5px;}
+  .oi-add-row{display:flex; gap:8px; margin:6px 0 4px;}
+  .oi-add-row input{flex:1; min-width:0; margin-bottom:0;}
+  .oi-add-row select{flex:0 0 112px; width:112px; margin-bottom:0; padding-left:8px; padding-right:4px;}
+  .oi-add-btn{
+    flex:0 0 auto; background:var(--copper); color:var(--navy-deep); border:none; cursor:pointer;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13.5px; padding:0 14px; border-radius:var(--radius);
+  }
+  @media (max-width:420px){
+    .oi-add-row{flex-wrap:wrap;}
+    .oi-add-row input{flex:1 1 100%;}
+    .oi-add-row select{flex:1;}
+  }
+  .oi-list{margin-top:14px;}
+  .oi-group-label{font-size:11.5px; color:var(--muted); margin:14px 0 6px;}
+  .oi-group-label:first-child{margin-top:0;}
+  .oi-item{
+    background:var(--navy-panel-2); border:1px solid var(--grid-line); border-left:3px solid var(--cat);
+    border-radius:var(--radius); padding:10px 12px; margin-bottom:8px;
+  }
+  .oi-item.flash{animation:oiFlash 1.2s ease;}
+  @keyframes oiFlash{0%,40%{box-shadow:0 0 0 2px var(--copper);}100%{box-shadow:0 0 0 0 transparent;}}
+  .oi-item.answered{opacity:0.72;}
+  .oi-item.answered .oi-text{text-decoration:line-through; text-decoration-color:rgba(238,241,234,0.35);}
+  .oi-row{display:flex; gap:10px; align-items:flex-start;}
+  .oi-status{
+    flex:0 0 auto; min-width:76px; min-height:30px; cursor:pointer; border-radius:999px;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px; padding:4px 10px;
+    border:1.5px solid var(--st); color:var(--paper);
+    background:color-mix(in srgb, var(--st) 18%, var(--navy-panel-2));
+    -webkit-tap-highlight-color:transparent;
+  }
+  .oi-status:focus-visible{outline:2px solid var(--paper); outline-offset:2px;}
+  .oi-item[data-status="open"]{--st:var(--oi-open);}
+  .oi-item[data-status="asked"]{--st:var(--oi-asked);}
+  .oi-item[data-status="answered"]{--st:var(--oi-answered);}
+  .oi-main{flex:1; min-width:0;}
+  .oi-text{font-size:14px; line-height:1.45; color:var(--paper); white-space:pre-wrap; word-break:break-word;}
+  .oi-meta{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:6px; font-size:11.5px; color:var(--muted);}
+  .oi-cat{color:var(--cat); font-weight:600;}
+  .oi-source{
+    background:none; border:none; padding:0; cursor:pointer; color:var(--copper); text-align:left;
+    font-family:'Inter',sans-serif; font-size:11.5px; text-decoration:underline; text-underline-offset:2px;
+  }
+  .oi-actions{display:flex; gap:14px; margin-top:8px;}
+  .oi-actions button{
+    background:none; border:none; padding:0; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px; text-decoration:underline; color:var(--muted);
+  }
+  .oi-actions .oi-edit{color:var(--copper);}
+  .oi-answer{margin:8px 0 0; min-height:54px; font-size:13px;}
+  .oi-empty{font-size:12.5px; color:var(--muted); text-align:center; padding:14px 8px 4px; line-height:1.5;}
+  .oi-footer{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;}
+  .oi-footer button{
+    flex:1 1 140px; min-height:42px; cursor:pointer; border-radius:var(--radius);
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px;
+  }
+  .oi-email-btn{background:var(--copper); color:var(--navy-deep); border:none;}
+  .oi-copy-btn{background:transparent; color:var(--paper); border:1px solid var(--grid-line);}
+  .oi-footer button:disabled{opacity:0.45; cursor:not-allowed;}
+  .oi-saved{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); margin-top:10px;}
+
+  /* Badge on a logged entry that is linked to an open item */
+  .entry-oi{
+    display:inline-flex; align-items:center; gap:6px; margin-top:8px; cursor:pointer;
+    background:color-mix(in srgb, var(--st) 14%, transparent); border:1px solid var(--st); color:var(--paper);
+    border-radius:999px; padding:3px 10px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:11.5px;
+  }
+  .entry-oi[data-status="open"]{--st:var(--oi-open);}
+  .entry-oi[data-status="asked"]{--st:var(--oi-asked);}
+  .entry-oi[data-status="answered"]{--st:var(--oi-answered);}
+  .entry-oi::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--st);}
+  .entry.flash{animation:oiFlash 1.2s ease;}
+  @media (prefers-reduced-motion: reduce){ .oi-item.flash, .entry.flash{animation:none;} details.open-items summary .arrow{transition:none;} }
 </style>
 </head>
 <body>
@@ -29717,8 +29837,10 @@ return heic2any;
       <button class="tag-btn" data-tag="Cooling">Cooling</button>
       <button class="tag-btn" data-tag="Ventilation">Ventilation</button>
       <button class="tag-btn" data-tag="DHW">DHW</button>
+      <button class="tag-btn" data-tag="DCW">DCW</button>
       <button class="tag-btn" data-tag="Controls">Controls</button>
       <button class="tag-btn" data-tag="Electrical">Electrical</button>
+      <button class="tag-btn" data-tag="Lighting">Lighting</button>
       <button class="tag-btn" data-tag="Metering">Metering</button>
       <button class="tag-btn" data-tag="Fabric">Fabric</button>
       <button class="tag-btn" data-tag="Other">Other</button>
@@ -29749,6 +29871,15 @@ return heic2any;
       <input type="text" id="location" placeholder="Location" />
     </div>
     <textarea id="note" placeholder="What did you see? Make/model, age, condition, anything unusual..."></textarea>
+
+    <label class="oi-toggle" id="oiToggleRow" for="sendToOpenItems">
+      <input type="checkbox" id="sendToOpenItems" />
+      <span class="switch" aria-hidden="true"></span>
+      <span class="t-text">
+        <span class="t-main">Send to Open Items</span>
+        <span class="t-sub">Couldn't confirm on site? Add it to the list for the property manager.</span>
+      </span>
+    </label>
 
     <div class="photo-actions">
       <button type="button" class="photo-btn camera" id="takePhotoBtn" aria-label="Take a new photo with the camera">
@@ -29786,6 +29917,50 @@ return heic2any;
     <button class="btn-primary" id="saveEntryBtn">Log entry</button>
     <button class="btn-cancel-edit" id="cancelEditBtn" style="display:none;">Cancel edit</button>
   </div>
+
+  <details class="building-info open-items" id="openItemsPanel" open>
+    <summary>
+      <span class="oi-heading">
+        <span class="oi-title">Open Items</span>
+        <span class="oi-subtitle">Outstanding Information for the property manager</span>
+      </span>
+      <span class="oi-count zero" id="oiCount">0 outstanding</span>
+      <span class="arrow" aria-hidden="true">▾</span>
+    </summary>
+    <div class="oi-body">
+      <label class="oi-field-label" for="oiContactEmail">Property manager's email</label>
+      <input type="email" id="oiContactEmail" placeholder="name@company.co.uk" autocomplete="email" inputmode="email" />
+
+      <label class="oi-field-label" for="oiNewText">Add an item</label>
+      <div class="oi-add-row">
+        <input type="text" id="oiNewText" placeholder="e.g. BMS heating setpoints and schedules" enterkeyhint="done" />
+        <select id="oiNewCategory" aria-label="Category">
+          <option value="General">General</option>
+          <option value="Heating">Heating</option>
+          <option value="Cooling">Cooling</option>
+          <option value="Ventilation">Ventilation</option>
+          <option value="DHW">DHW</option>
+          <option value="DCW">DCW</option>
+          <option value="Controls">Controls</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Lighting">Lighting</option>
+          <option value="Metering">Metering</option>
+          <option value="Fabric">Fabric</option>
+          <option value="Other">Other</option>
+          <option value="Issues">Issues</option>
+        </select>
+        <button type="button" class="oi-add-btn" id="oiAddBtn">Add</button>
+      </div>
+
+      <div class="oi-list" id="oiList"></div>
+
+      <div class="oi-footer">
+        <button type="button" class="oi-email-btn" id="oiEmailBtn">Email open items</button>
+        <button type="button" class="oi-copy-btn" id="oiCopyBtn">Copy list</button>
+      </div>
+      <div class="oi-saved" id="oiSaved">Auto-saves on this device</div>
+    </div>
+  </details>
 
   <div class="entries-header">
     <h2>Logged Entries</h2>
@@ -29922,6 +30097,7 @@ let storageOK = true;
 let currentAuditId = null;
 let catalogue = []; // [{id, name, address, createdAt, updatedAt, entryCount}]
 let editingEntryId = null; // set while an existing entry is loaded into the form for editing
+let openItems = { contactEmail:'', items:[] }; // Open Items / Outstanding Information for the current survey
 
 const el = id => document.getElementById(id);
 
@@ -29953,6 +30129,17 @@ function scheduleDraftSave(){
   const node = el(id);
   if(node) node.addEventListener('input', scheduleDraftSave);
 });
+el('sendToOpenItems').addEventListener('change', ()=>{
+  syncOiToggleUI();
+  saveDraft();
+});
+function syncOiToggleUI(){
+  el('oiToggleRow').classList.toggle('on', el('sendToOpenItems').checked);
+}
+function setOiToggle(on){
+  el('sendToOpenItems').checked = !!on;
+  syncOiToggleUI();
+}
 
 // Photo capture with resize/compress
 // Two separate inputs:
@@ -30108,6 +30295,8 @@ el('saveEntryBtn').addEventListener('click', async ()=>{
     delete entry.meterType; delete entry.meterNumber; delete entry.amrInstalled;
   }
 
+  await syncEntryOpenItem(entry, el('sendToOpenItems').checked);
+
   entry.synced = await saveEntryToStorage(entry);
   await clearDraft();
   collapsedGroups.delete(entry.tag);
@@ -30125,6 +30314,7 @@ function resetEntryForm(){
   el('meterFields').classList.remove('visible');
   document.querySelectorAll('.tag-btn').forEach(b=>b.classList.remove('active'));
   selectedTag = null;
+  setOiToggle(false);
   exitEditMode();
 }
 
@@ -30146,6 +30336,7 @@ function enterEditMode(entry){
     el('meterNumber').value = entry.meterNumber || '';
     el('amrInstalled').value = entry.amrInstalled || '';
   }
+  setOiToggle(!!(entry.openItemId && findOpenItem(entry.openItemId)));
   applyEditModeUI();
   saveDraft();
   el('entryFormPanel').scrollIntoView({ behavior:'smooth', block:'start' });
@@ -30174,6 +30365,7 @@ el('cancelEditBtn').addEventListener('click', cancelEditMode);
 function entryKey(id){ return `audit:${currentAuditId}:entry:${id}`; }
 function infoKey(){ return `audit:${currentAuditId}:info`; }
 function draftKey(){ return `draft:${currentAuditId}`; }
+function openItemsKey(){ return `audit:${currentAuditId}:openitems`; }
 
 // ---------- In-progress entry draft (survives a tab reload mid-entry) ----------
 
@@ -30194,6 +30386,7 @@ function collectDraftState(){
     meterType: el('meterType').value,
     meterNumber: el('meterNumber').value,
     amrInstalled: el('amrInstalled').value,
+    sendToOpenItems: el('sendToOpenItems').checked,
     editingEntryId,
     savedAt: new Date().toISOString()
   };
@@ -30255,6 +30448,7 @@ async function restoreDraftIfAny(){
     el('amrInstalled').value = d.amrInstalled || '';
     pendingPhotos = Array.isArray(d.pendingPhotos) ? d.pendingPhotos.slice() : [];
     renderPendingPhotos();
+    setOiToggle(!!d.sendToOpenItems);
     if(d.selectedTag){
       selectedTag = d.selectedTag;
       document.querySelectorAll('.tag-btn').forEach(b=>{
@@ -30440,6 +30634,8 @@ async function openAudit(id){
   await setActiveAuditId(id);
   await loadBuildingInfoForCurrentAudit();
   await loadEntriesForCurrentAudit();
+  await loadOpenItemsForCurrentAudit();
+  renderOpenItems();
   renderEntries();
   updateExportState();
   refreshStorageStats();
@@ -30460,6 +30656,7 @@ async function deleteAudit(id){
       }
     }
     await idbStorage.delete(`audit:${id}:info`, false);
+    await idbStorage.delete(`audit:${id}:openitems`, false);
   }catch(e){}
   catalogue = catalogue.filter(a=>a.id !== id);
   await saveCatalogue();
@@ -30600,7 +30797,7 @@ async function initApp(){
   }
 }
 
-const CATEGORY_ORDER = ['Heating','Cooling','Ventilation','DHW','Controls','Electrical','Metering','Fabric','Other','Issues'];
+const CATEGORY_ORDER = ['Heating','Cooling','Ventilation','DHW','DCW','Controls','Electrical','Lighting','Metering','Fabric','Other','Issues'];
 const collapsedGroups = new Set();
 
 function catColor(tag){
@@ -30653,6 +30850,8 @@ function renderEntries(){
     groups[tag].forEach(entry=>{
       const div = document.createElement('div');
       div.className = 'entry';
+      div.id = 'entry-' + entry.id;
+      const linkedItem = entry.openItemId ? findOpenItem(entry.openItemId) : null;
       const timeLabel = new Date(entry.time).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
       const meterLine = entry.tag === 'Metering'
         ? [entry.meterType, entry.meterNumber ? ('#'+escapeHtml(entry.meterNumber)) : '', entry.amrInstalled ? ('AMR: '+entry.amrInstalled) : ''].filter(Boolean).join(' · ')
@@ -30678,6 +30877,7 @@ function renderEntries(){
         ${meterLine ? `<div class="entry-meter">${meterLine}</div>` : ''}
         ${entry.note ? `<div class="entry-note">${escapeHtml(entry.note)}</div>` : ''}
         ${entry.photos.length ? `<div class="entry-photos">${entry.photos.map(p=>`<img src="${p}"/>`).join('')}</div>` : ''}
+        ${linkedItem ? `<button type="button" class="entry-oi" data-oi="${linkedItem.id}" data-status="${linkedItem.status}">Open item · ${OI_STATUS_LABEL[linkedItem.status]}</button>` : ''}
         <div class="entry-actions">
           <button class="entry-edit" data-id="${entry.id}">Edit</button>
           <button class="entry-delete" data-id="${entry.id}">Delete</button>
@@ -30728,6 +30928,11 @@ function renderEntries(){
   list.querySelectorAll('.entry-delete').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const id = btn.dataset.id;
+      const doomed = entries.find(e=>e.id === id);
+      if(doomed && doomed.openItemId && findOpenItem(doomed.openItemId)){
+        const removeItem = confirm('This entry is linked to an open item.\n\nOK — delete the open item too\nCancel — keep the open item on its own');
+        await detachOpenItemFromEntry(doomed, removeItem);
+      }
       entries = entries.filter(e=>e.id !== id);
       try{ await idbStorage.delete(entryKey(id), false); }catch(e){}
       if(editingEntryId === id) await cancelEditMode();
@@ -30751,6 +30956,10 @@ function renderEntries(){
       refreshStorageStats();
     });
   });
+
+  list.querySelectorAll('.entry-oi').forEach(btn=>{
+    btn.addEventListener('click', ()=> jumpToOpenItem(btn.dataset.oi));
+  });
 }
 
 function escapeHtml(str){
@@ -30760,7 +30969,7 @@ function escapeHtml(str){
 }
 
 function updateExportState(){
-  el('exportBtn').disabled = entries.length === 0;
+  el('exportBtn').disabled = entries.length === 0 && openItems.items.length === 0;
 }
 
 async function refreshStorageStats(){
@@ -30878,12 +31087,12 @@ el('exportBtn').addEventListener('click', async ()=>{
 
   const project = el('biName').value.trim() || 'Site Survey';
   const grouped = {};
-  const meOrder = ['Heating','Cooling','Ventilation','DHW','Controls','Electrical','Metering','Fabric','Other'];
+  const meOrder = ['Heating','Cooling','Ventilation','DHW','DCW','Controls','Electrical','Lighting','Metering','Fabric','Other'];
   const otherOrder = ['Issues','Questions'];
   const order = [...meOrder, ...otherOrder];
   order.forEach(t=>grouped[t]=[]);
   const chronological = [...entries].sort((a,b)=> a.id.localeCompare(b.id));
-  chronological.forEach(e=> grouped[e.tag].push(e));
+  chronological.forEach(e=>{ if(!grouped[e.tag]){ grouped[e.tag] = []; otherOrder.push(e.tag); } grouped[e.tag].push(e); });
 
   // One date/time for the whole notes file: when the first entry was logged
   const firstTime = entries.reduce((min,e)=>{
@@ -31045,6 +31254,54 @@ el('exportBtn').addEventListener('click', async ()=>{
   }
   otherOrder.forEach(emitCategory);
 
+  // ---------- Open Items / Outstanding Information ----------
+  if(openItems.items.length || openItems.contactEmail){
+    const OI_HEADING = 'Open Items / Outstanding Information';
+    md += `## ${OI_HEADING}\n\n`;
+    paragraphs.push(docxParagraph([ docxRun(OI_HEADING, {bold:true, size:SIZE_HEADER}) ]));
+    pdfText(OI_HEADING, { bold:true, size:SIZE_HEADER, gapAfter:4 });
+
+    const emailLine = `Property manager contact: ${openItems.contactEmail || 'not recorded'}`;
+    md += `**Property manager contact:** ${openItems.contactEmail || 'not recorded'}\n\n`;
+    paragraphs.push(docxParagraph([
+      docxRun('Property manager contact: ', {bold:true, size:SIZE_NORMAL}),
+      docxRun(openItems.contactEmail || 'not recorded', {size:SIZE_NORMAL})
+    ]));
+    pdfText(emailLine, { size:SIZE_NORMAL, gapAfter:6 });
+
+    const emitItems = (title, items)=>{
+      if(!items.length) return;
+      md += `### ${title}\n\n`;
+      paragraphs.push(docxParagraph([ docxRun(title, {bold:true, size:SIZE_CATEGORY}) ]));
+      pdfText(title, { bold:true, size:SIZE_CATEGORY, gapAfter:4 });
+      items.forEach((item, i)=>{
+        const status = item.status === 'asked'
+          ? `Asked${item.askedAt ? ' ' + longDate(item.askedAt) : ''}`
+          : item.status === 'answered'
+            ? `Answered${item.answeredAt ? ' ' + longDate(item.answeredAt) : ''}`
+            : 'Open';
+        const meta = [item.category, item.sourceLabel ? `from ${item.sourceLabel}` : '', status].filter(Boolean).join(' · ');
+        md += `${i+1}. ${item.text}\n   _${meta}_\n`;
+        paragraphs.push(docxParagraph([ docxRun(`${i+1}. ${item.text}`, {size:SIZE_NORMAL}) ]));
+        paragraphs.push(docxParagraph([ docxRun(meta, {italic:true, size:SIZE_NORMAL}) ]));
+        pdfText(`${i+1}. ${item.text}`, { size:SIZE_NORMAL, gapAfter:1 });
+        pdfText(meta, { size:SIZE_NORMAL, gapAfter: item.answer ? 1 : 4 });
+        if(item.status === 'answered' && item.answer){
+          md += `   **Answer:** ${item.answer.replace(/\n/g, '\n   ')}\n`;
+          paragraphs.push(docxParagraph([
+            docxRun('Answer: ', {bold:true, size:SIZE_NORMAL}),
+            docxRun(item.answer, {size:SIZE_NORMAL})
+          ]));
+          pdfText(`Answer: ${item.answer}`, { size:SIZE_NORMAL, gapAfter:4 });
+        }
+        md += `\n`;
+        paragraphs.push(docxParagraph([]));
+      });
+    };
+    emitItems('Outstanding', outstandingItems());
+    emitItems('Answered', openItems.items.filter(i=>i.status === 'answered'));
+  }
+
   zip.file('notes.md', md);
   await addDocxToZip(zip, 'notes.docx', paragraphs);
   zip.file('notes.pdf', pdf.output('arraybuffer'));
@@ -31064,15 +31321,390 @@ el('exportBtn').addEventListener('click', async ()=>{
 });
 
 el('clearBtn').addEventListener('click', async ()=>{
-  if(!confirm('Clear all entries in this survey? This cannot be undone. Export first if you need them.')) return;
+  if(!confirm('Clear all entries in this survey? This cannot be undone. Export first if you need them.\n\nOpen Items are kept.')) return;
   for(const entry of entries){
     try{ await idbStorage.delete(entryKey(entry.id), false); }catch(e){}
   }
+  // Open items are a separate list: keep them, just unlink them from the deleted entries.
+  if(openItems.items.some(i=>i.entryId)){
+    openItems.items.forEach(i=>{ i.entryId = null; });
+    await saveOpenItems();
+  }
   entries = [];
   renderEntries();
+  renderOpenItems();
   updateExportState();
   refreshStorageStats();
   touchCatalogueEntry();
+});
+
+/* =========================================================================
+   OPEN ITEMS / OUTSTANDING INFORMATION
+   -------------------------------------------------------------------------
+   Things that couldn't be confirmed on site, kept as a per-survey list to
+   chase with the property manager. Stored as one record per survey
+   (audit:<id>:openitems) holding the contact email and the items.
+   An item can be added directly in the panel, or created from a logged
+   entry via the "Send to Open Items" toggle — those stay linked both ways.
+   ========================================================================= */
+const OI_STATUS_ORDER = ['open','asked','answered'];
+const OI_STATUS_LABEL = { open:'Open', asked:'Asked', answered:'Answered' };
+
+function newOpenItemId(){
+  return 'oi-' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+function findOpenItem(id){
+  return openItems.items.find(i=>i.id === id) || null;
+}
+function entrySourceLabel(entry){
+  return [entry.tag, entry.asset, entry.entryNo ? `No. ${entry.entryNo}` : '', entry.location].filter(Boolean).join(' · ');
+}
+function entryDefaultItemText(entry){
+  if(entry.note) return entry.note;
+  const what = entry.asset || entry.location || entry.tag;
+  return `${what}: details to confirm`;
+}
+function shortDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+}
+function longDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+}
+
+async function loadOpenItemsForCurrentAudit(){
+  openItems = { contactEmail:'', items:[] };
+  try{
+    const res = await idbStorage.get(openItemsKey(), false);
+    if(res){
+      const data = JSON.parse(res.value);
+      openItems.contactEmail = data.contactEmail || '';
+      openItems.items = Array.isArray(data.items) ? data.items : [];
+    }
+  }catch(e){}
+  el('oiContactEmail').value = openItems.contactEmail;
+}
+
+async function saveOpenItems(){
+  if(!currentAuditId) return false;
+  try{
+    const value = JSON.stringify(openItems);
+    await idbStorage.set(openItemsKey(), value, false);
+    mirrorToCloudBestEffort(openItemsKey(), value);
+    el('oiSaved').textContent = 'Saved';
+    clearTimeout(saveOpenItems._t);
+    saveOpenItems._t = setTimeout(()=>{ el('oiSaved').textContent = 'Auto-saves on this device'; }, 1500);
+    return true;
+  }catch(e){
+    el('oiSaved').textContent = 'Could not save (device storage issue)';
+    return false;
+  }
+}
+
+let oiSaveTimer = null;
+function scheduleOpenItemsSave(){
+  el('oiSaved').textContent = 'Saving...';
+  clearTimeout(oiSaveTimer);
+  oiSaveTimer = setTimeout(saveOpenItems, 500);
+}
+
+el('oiContactEmail').addEventListener('input', ()=>{
+  openItems.contactEmail = el('oiContactEmail').value.trim();
+  scheduleOpenItemsSave();
+});
+
+// Called when an entry is logged/updated: create, update or unlink its open item.
+async function syncEntryOpenItem(entry, wantLinked){
+  let item = entry.openItemId ? findOpenItem(entry.openItemId) : null;
+  if(entry.openItemId && !item) delete entry.openItemId; // item was deleted from the panel
+
+  if(wantLinked){
+    if(!item){
+      item = {
+        id: newOpenItemId(),
+        text: entryDefaultItemText(entry),
+        category: entry.tag || 'General',
+        status: 'open',
+        createdAt: new Date().toISOString(),
+        entryId: entry.id,
+        edited: false
+      };
+      openItems.items.push(item);
+      entry.openItemId = item.id;
+    } else {
+      item.category = entry.tag || item.category;
+      if(!item.edited) item.text = entryDefaultItemText(entry);
+      item.entryId = entry.id;
+    }
+    item.sourceLabel = entrySourceLabel(entry);
+    await saveOpenItems();
+    renderOpenItems();
+  } else if(item){
+    const removeItem = confirm('"Send to Open Items" is now off for this entry.\n\nOK — remove the linked open item\nCancel — keep it on the list on its own');
+    await detachOpenItemFromEntry(entry, removeItem);
+  }
+}
+
+// Breaks the link between an entry and its open item, optionally deleting the item.
+async function detachOpenItemFromEntry(entry, removeItem){
+  const item = findOpenItem(entry.openItemId);
+  delete entry.openItemId;
+  if(item){
+    if(removeItem){
+      openItems.items = openItems.items.filter(i=>i.id !== item.id);
+    } else {
+      item.entryId = null;
+      item.sourceLabel = entrySourceLabel(entry);
+    }
+    await saveOpenItems();
+  }
+  renderOpenItems();
+}
+
+function addOpenItemFromPanel(){
+  const text = el('oiNewText').value.trim();
+  if(!text){ el('oiNewText').focus(); return; }
+  openItems.items.push({
+    id: newOpenItemId(),
+    text,
+    category: el('oiNewCategory').value || 'General',
+    status: 'open',
+    createdAt: new Date().toISOString(),
+    entryId: null,
+    edited: true
+  });
+  el('oiNewText').value = '';
+  saveOpenItems();
+  renderOpenItems();
+  updateExportState();
+  el('oiNewText').focus();
+}
+el('oiAddBtn').addEventListener('click', addOpenItemFromPanel);
+el('oiNewText').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){ e.preventDefault(); addOpenItemFromPanel(); }
+});
+
+function outstandingItems(){
+  return openItems.items.filter(i=>i.status !== 'answered');
+}
+
+function renderOpenItems(){
+  const list = el('oiList');
+  const outstanding = outstandingItems();
+  const answered = openItems.items.filter(i=>i.status === 'answered');
+
+  const count = el('oiCount');
+  count.textContent = `${outstanding.length} outstanding`;
+  count.classList.toggle('zero', outstanding.length === 0);
+  el('oiEmailBtn').disabled = outstanding.length === 0;
+  el('oiCopyBtn').disabled = outstanding.length === 0;
+
+  if(openItems.items.length === 0){
+    list.innerHTML = '<div class="oi-empty">Nothing outstanding. Add anything you couldn\'t confirm on site, or switch on "Send to Open Items" when logging an entry.</div>';
+    return;
+  }
+
+  const itemHtml = (item)=>{
+    const linked = item.entryId && entries.some(e=>e.id === item.entryId);
+    const statusText = item.status === 'asked' && item.askedAt
+      ? `Asked ${shortDate(item.askedAt)}`
+      : OI_STATUS_LABEL[item.status];
+    const source = item.sourceLabel
+      ? (linked
+          ? `<button type="button" class="oi-source" data-entry="${item.entryId}">From ${escapeHtml(item.sourceLabel)}</button>`
+          : `<span>From ${escapeHtml(item.sourceLabel)}</span>`)
+      : '';
+    return `
+      <div class="oi-item ${item.status}" id="oi-${item.id}" data-status="${item.status}" style="--cat:${catColor(item.category)}">
+        <div class="oi-row">
+          <button type="button" class="oi-status" data-id="${item.id}" aria-label="Status: ${statusText}. Tap to change.">${statusText}</button>
+          <div class="oi-main">
+            <div class="oi-text">${escapeHtml(item.text)}</div>
+            <div class="oi-meta">
+              <span class="oi-cat">${escapeHtml(item.category)}</span>
+              ${source}
+            </div>
+          </div>
+        </div>
+        ${item.status === 'answered'
+          ? `<textarea class="oi-answer" data-id="${item.id}" placeholder="What did the property manager say?">${escapeHtml(item.answer || '')}</textarea>`
+          : ''}
+        <div class="oi-actions">
+          <button type="button" class="oi-edit" data-id="${item.id}">Edit</button>
+          <button type="button" class="oi-delete" data-id="${item.id}">Delete</button>
+        </div>
+      </div>`;
+  };
+
+  let html = '';
+  if(outstanding.length){
+    html += `<div class="oi-group-label">Outstanding (${outstanding.length})</div>` + outstanding.map(itemHtml).join('');
+  }
+  if(answered.length){
+    html += `<div class="oi-group-label">Answered (${answered.length})</div>` + answered.map(itemHtml).join('');
+  }
+  list.innerHTML = html;
+
+  list.querySelectorAll('.oi-status').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const item = findOpenItem(btn.dataset.id);
+      if(!item) return;
+      const next = OI_STATUS_ORDER[(OI_STATUS_ORDER.indexOf(item.status) + 1) % OI_STATUS_ORDER.length];
+      item.status = next;
+      if(next === 'asked' && !item.askedAt) item.askedAt = new Date().toISOString();
+      if(next === 'answered') item.answeredAt = new Date().toISOString();
+      saveOpenItems();
+      renderOpenItems();
+      renderEntries();
+      if(next === 'answered'){
+        const box = list.querySelector(`.oi-answer[data-id="${item.id}"]`);
+        if(box) box.focus();
+      } else {
+        const again = list.querySelector(`.oi-status[data-id="${item.id}"]`);
+        if(again) again.focus();
+      }
+    });
+  });
+
+  list.querySelectorAll('.oi-answer').forEach(box=>{
+    box.addEventListener('input', ()=>{
+      const item = findOpenItem(box.dataset.id);
+      if(!item) return;
+      item.answer = box.value;
+      scheduleOpenItemsSave();
+    });
+  });
+
+  list.querySelectorAll('.oi-edit').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const item = findOpenItem(btn.dataset.id);
+      if(!item) return;
+      const text = prompt('Edit open item', item.text);
+      if(text === null) return;
+      const trimmed = text.trim();
+      if(!trimmed) return;
+      item.text = trimmed;
+      item.edited = true; // stop later entry edits from overwriting this wording
+      saveOpenItems();
+      renderOpenItems();
+    });
+  });
+
+  list.querySelectorAll('.oi-delete').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const item = findOpenItem(btn.dataset.id);
+      if(!item) return;
+      if(!confirm('Delete this open item?')) return;
+      openItems.items = openItems.items.filter(i=>i.id !== item.id);
+      const entry = item.entryId ? entries.find(e=>e.id === item.entryId) : null;
+      if(entry){
+        delete entry.openItemId;
+        entry.synced = await saveEntryToStorage(entry);
+        if(editingEntryId === entry.id) setOiToggle(false);
+      }
+      await saveOpenItems();
+      renderOpenItems();
+      renderEntries();
+      updateExportState();
+    });
+  });
+
+  list.querySelectorAll('.oi-source').forEach(btn=>{
+    btn.addEventListener('click', ()=> jumpToEntry(btn.dataset.entry));
+  });
+}
+
+function smoothScroll(){ return matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; }
+function flash(node){
+  node.classList.remove('flash'); void node.offsetWidth; node.classList.add('flash');
+}
+
+function jumpToEntry(entryId){
+  const entry = entries.find(e=>e.id === entryId);
+  if(!entry) return;
+  if(collapsedGroups.has(entry.tag)){
+    collapsedGroups.delete(entry.tag);
+    renderEntries();
+  }
+  const card = el('entry-' + entryId);
+  if(!card) return;
+  card.scrollIntoView({behavior:smoothScroll(), block:'center'});
+  flash(card);
+}
+
+function jumpToOpenItem(itemId){
+  el('openItemsPanel').open = true;
+  const node = el('oi-' + itemId);
+  if(!node) return;
+  node.scrollIntoView({behavior:smoothScroll(), block:'center'});
+  flash(node);
+}
+
+function buildOpenItemsMessage(){
+  const project = el('biName').value.trim();
+  const address = el('biAddress').value.trim();
+  const where = [project, address].filter(Boolean).join(', ');
+  const lines = outstandingItems().map((item, i)=>{
+    const detail = item.sourceLabel ? item.sourceLabel.split(' · ').slice(1).join(', ') : '';
+    return `${i+1}. [${item.category}] ${item.text}${detail ? ` (re: ${detail})` : ''}`;
+  });
+  return {
+    subject: `Outstanding information${project ? ' – ' + project : ''}`,
+    body:
+`Hi,
+
+Following our recent site survey${where ? ' at ' + where : ''}, please could you help with the following outstanding information:
+
+${lines.join('\n')}
+
+Many thanks,`
+  };
+}
+
+el('oiEmailBtn').addEventListener('click', ()=>{
+  if(outstandingItems().length === 0) return;
+  const to = el('oiContactEmail').value.trim();
+  if(!to && !confirm('No property manager email added yet. Open an email without a recipient?')){
+    el('openItemsPanel').open = true;
+    el('oiContactEmail').focus();
+    return;
+  }
+  const { subject, body } = buildOpenItemsMessage();
+  window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const stillOpen = openItems.items.filter(i=>i.status === 'open');
+  if(stillOpen.length){
+    setTimeout(()=>{
+      if(confirm(`Mark the ${stillOpen.length} open item${stillOpen.length === 1 ? '' : 's'} as Asked?`)){
+        const now = new Date().toISOString();
+        stillOpen.forEach(i=>{ i.status = 'asked'; i.askedAt = now; });
+        saveOpenItems();
+        renderOpenItems();
+        renderEntries();
+      }
+    }, 800);
+  }
+});
+
+el('oiCopyBtn').addEventListener('click', async ()=>{
+  if(outstandingItems().length === 0) return;
+  const { body } = buildOpenItemsMessage();
+  const btn = el('oiCopyBtn');
+  let ok = false;
+  try{
+    await navigator.clipboard.writeText(body);
+    ok = true;
+  }catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = body; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try{ ok = document.execCommand('copy'); }catch(err){ ok = false; }
+    document.body.removeChild(ta);
+  }
+  btn.textContent = ok ? 'Copied' : 'Copy failed';
+  setTimeout(()=>{ btn.textContent = 'Copy list'; }, 1500);
 });
 
 initApp();
