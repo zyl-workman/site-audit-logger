@@ -30215,6 +30215,69 @@ return heic2any;
 }
 
 .export-bar .wrap-inner:has(.ib-only:not([hidden])) .btn-export{padding:12px 6px; font-size:12.5px}
+/* photo slots: tap to choose camera or library */
+#ibosApp .slot-add{all:unset; box-sizing:border-box; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; color:var(--copper); font-family:'IBM Plex Mono',monospace; font-size:9.5px; padding:3px}
+#ibosApp .slot-add:focus-visible{outline:2px solid var(--copper); outline-offset:-2px}
+#ibosApp .tier-note{color:var(--copper)!important}
+#ibosApp .tier-note.chk{color:var(--controls)!important}
+#ibosApp .tier-note.opt{color:var(--muted)!important}
+.ib-sheet{position:fixed; inset:0; z-index:250; background:rgba(5,10,18,0.7); display:none; align-items:flex-end; justify-content:center}
+.ib-sheet.open{display:flex}
+.ib-sheet .box{width:100%; max-width:640px; background:var(--navy-panel); border-top:1px solid var(--grid-line); padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.ib-sheet h2{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; margin:0 0 14px; color:var(--paper)}
+.ib-sheet .photo-actions{justify-content:center; gap:14px; margin-bottom:14px}
+.ib-sheet .photo-btn{width:96px; height:84px}
+.ib-sheet .photo-btn .pb-label{font-size:11px}
+.ib-sheet .btn-cancel-edit{margin-top:0}
+/* IBOS surveys: the record replaces the log entry form, open items and logged entries */
+body.ibos-mode #entryFormPanel, body.ibos-mode #openItemsPanel, body.ibos-mode .entries-header, body.ibos-mode .storage-stats, body.ibos-mode #entriesList, body.ibos-mode #clearBtn{display:none!important}
+/* ---- Section index (IBOS surveys): a rail on the left to jump between sections ---- */
+#ibRail{display:none}
+body.ibos-mode #ibRail{display:flex}
+#ibRail{position:fixed; left:0; top:0; bottom:0; z-index:95; width:58px; flex-direction:column; align-items:stretch; gap:2px;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 4px calc(env(safe-area-inset-bottom,0px) + 84px);
+  background:rgba(13,26,43,0.94); border-right:1px solid var(--grid-line); overflow-y:auto; overflow-x:hidden;
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); scrollbar-width:none; transition:width .18s ease, box-shadow .18s ease}
+#ibRail::-webkit-scrollbar{display:none}
+#ibRail button{all:unset; box-sizing:border-box; cursor:pointer; -webkit-tap-highlight-color:transparent}
+#ibRail .rl-menu, #ibRail .rl-i{display:flex; flex-direction:column; align-items:center; gap:3px; min-height:50px; padding:5px 0 4px; border-radius:var(--radius); position:relative; color:var(--muted)}
+#ibRail .rl-menu{min-height:44px; margin-bottom:4px; border-bottom:1px solid var(--grid-line); border-radius:0}
+#ibRail .rl-menu svg{width:22px; height:22px}
+#ibRail .rl-t{font-family:'IBM Plex Mono',monospace; font-size:9px; line-height:1.1; letter-spacing:0.01em; text-align:center; white-space:nowrap}
+#ibRail .rl-ring{position:relative; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+#ibRail .rl-ring.prog{background:conic-gradient(var(--rc) calc(var(--p) * 1%), rgba(238,241,234,0.12) 0)}
+#ibRail .rl-ic{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--rc); color:var(--navy-deep);
+  font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:700; box-shadow:0 0 0 3px rgba(13,26,43,0.94)}
+#ibRail .rl-ring:not(.prog) .rl-ic{box-shadow:none}
+#ibRail .rl-b{position:absolute; top:-3px; right:-6px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--navy-panel-2); color:var(--paper);
+  border:1px solid rgba(255,255,255,0.25); font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; line-height:14px; text-align:center; box-sizing:border-box}
+#ibRail .rl-b.hi{background:var(--issues); border-color:var(--issues); color:var(--navy-deep)}
+#ibRail .rl-b.done{background:var(--ventilation); border-color:var(--ventilation); color:var(--navy-deep)}
+#ibRail .rl-i.on{color:var(--paper); background:rgba(255,255,255,0.06)}
+#ibRail .rl-i.on::before{content:''; position:absolute; left:-4px; top:8px; bottom:8px; width:3px; border-radius:2px; background:var(--rc)}
+#ibRail .rl-i:focus-visible, #ibRail .rl-menu:focus-visible{outline:2px solid var(--copper); outline-offset:-2px}
+#ibRail .rl-top .rl-ic{background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.25)}
+#ibRail .rl-full{display:none}
+/* expanded: full names and each section's summary line */
+#ibRail.wide{width:250px; box-shadow:8px 0 24px rgba(0,0,0,0.45)}
+#ibRail.wide .rl-i{flex-direction:row; justify-content:flex-start; gap:10px; padding:6px 8px; min-height:48px}
+#ibRail.wide .rl-i > .rl-t{display:none}
+#ibRail.wide .rl-full{display:flex; flex-direction:column; min-width:0; gap:2px; text-align:left}
+#ibRail.wide .rl-full b{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; color:var(--paper); white-space:normal; line-height:1.25}
+#ibRail.wide .rl-full small{font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px}
+#ibRail.wide .rl-full small:empty{display:none}
+#ibRail.wide .rl-menu{flex-direction:row; justify-content:flex-start; gap:10px; padding:0 12px}
+#ibRail.wide .rl-menu .rl-t{font-size:11px}
+/* make room for the rail on phones; beside the column on wider screens */
+body.ibos-mode .wrap{padding-left:70px}
+body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
+@media (min-width:800px){
+  body.ibos-mode .wrap{padding-left:16px}
+  #ibRail{left:calc(50% - 320px - 74px); background:transparent; border-right:none; -webkit-backdrop-filter:none; backdrop-filter:none}
+  #ibRail.wide{background:rgba(13,26,43,0.97); border-right:1px solid var(--grid-line)}
+}
+@media (prefers-reduced-motion: reduce){ #ibRail{transition:none} }
+@media (max-width:799px){ body.ibos-mode .export-bar{padding-left:70px} }
 
 </style>
 </head>
@@ -31496,6 +31559,7 @@ function applySurveyType(){
   el('biPanel').hidden = ib;
   el('bmsPanel').hidden = true;          // IBOS surveys use the IBOS checklist; earlier BMS answers are carried into it
   el('ibosApp').hidden = !ib;
+  document.body.classList.toggle('ibos-mode', ib);
   el('ibosItemRow').hidden = !ib;
   el('ibosUseRow').hidden = !(ib && bmsHasData());
   document.querySelectorAll('.export-bar .ib-only').forEach(b=> b.hidden = !ib);
@@ -33556,6 +33620,34 @@ initApp();
   });
 })();
 </script>
+<div class="ib-sheet" id="ibPhotoSheet" role="dialog" aria-modal="true" aria-labelledby="ibSheetTitle"><div class="box"><h2 id="ibSheetTitle">Add photo</h2><div class="photo-actions"><button type="button" class="photo-btn camera" id="ibCamBtn" aria-label="Take a new photo with the camera">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <!-- camera body -->
+          <path d="M10 20h9l4-6.5a3 3 0 0 1 2.6-1.5h12.8a3 3 0 0 1 2.6 1.5L45 20h9a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V24a4 4 0 0 1 4-4z" fill="currentColor"/>
+          <!-- lens -->
+          <circle cx="32" cy="35" r="11.5" fill="#c97a3c"/>
+          <circle cx="32" cy="35" r="7.5" fill="currentColor"/>
+          <circle cx="29" cy="32" r="2.2" fill="#c97a3c" opacity="0.8"/>
+          <!-- flash -->
+          <rect x="47" y="25" width="5" height="3" rx="1.2" fill="#c97a3c"/>
+        </svg>
+        <span class="pb-label">Camera</span>
+      </button><button type="button" class="photo-btn library" id="ibLibBtn" aria-label="Add existing photos from your photo library">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <!-- back photo (stack) -->
+          <rect x="14" y="8" width="38" height="30" rx="3" fill="none" stroke="#4f9dc9" stroke-width="3" opacity="0.55"/>
+          <!-- front photo -->
+          <rect x="6" y="16" width="40" height="32" rx="3.5" fill="#15263d" stroke="#eef1ea" stroke-width="3"/>
+          <circle cx="16.5" cy="26" r="3.5" fill="#d9c25a"/>
+          <path d="M9 44l10-11 7 7 5-5 12 11.5" fill="none" stroke="#7fae6a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- plus badge -->
+          <circle cx="47" cy="46" r="13" fill="#4f9dc9" stroke="#15263d" stroke-width="3"/>
+          <path d="M47 39v14M40 46h14" stroke="#0d1a2b" stroke-width="3.8" stroke-linecap="round"/>
+        </svg>
+        <span class="pb-label">Library</span>
+      </button></div><button type="button" class="btn-cancel-edit" id="ibSheetCancel">Cancel</button></div></div>
+<input type="file" id="ibCamInput" accept="image/*" capture="environment" hidden>
+<input type="file" id="ibLibInput" accept="image/*" multiple hidden>
 <div id="toast" class="ib-toast" role="status" aria-live="polite"></div>
 <div id="report"></div>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
@@ -33619,14 +33711,14 @@ const STATUS_LABEL = Object.fromEntries(STATUS);
 const STATUS_COLOR = {ok:"#2FA36B",issue:"#ED7D31",no:"#D64545",na:"#9AA7BD"};
 
 const DEF = [
- {id:"min", tier:"req", title:"Minimum — required on the day", items:[
+ {id:"min", tier:"req", title:"BMS access", note:"Required on the day — the survey can’t be completed without these.", items:[
   ["bms_pc_location","BMS PC — physical location","Room / floor and how it is accessed. Photo of the PC and its surroundings."],
   ["bms_pc_login","BMS PC login","Confirm the PC login works. Do not record usernames or passwords here.", true],
   ["bms_headend_login","BMS application / head-end login","Graphics, alarms and trends reviewed. Do not record usernames or passwords here.", true],
   ["plantroom_access","Plantroom access","Plantrooms visited, any not accessible and why. Include comms / IT / server rooms."],
   ["controller_types","Controller types — panels and risers","Controller make, model, protocol and location. Photograph panel labels and controllers."],
  ]},
- {id:"net", tier:"req", title:"Site connectivity — we will check on the day", items:[
+ {id:"net", tier:"req", title:"Site connectivity", note:"Required on the day — checked on site.", items:[
   ["net_power","Access to power","Mains supply near the BMS network equipment (e.g. a switched 13 A fused spur)?"],
   ["net_ethernet","Ethernet access to the BMS network","Free Ethernet port onto the BMS network, and where."],
   ["net_bacnet","BACnet reachability","Are the controllers reachable over BACnet on that network?"],
@@ -33635,13 +33727,13 @@ const DEF = [
   ["net_networking","Networking","Managed or unmanaged? Extra cabling needed to reach all controllers?"],
   ["net_internet","Internet connectivity","Outbound internet access available from the BMS network?"],
  ]},
- {id:"bms", tier:"chk", title:"BMS and controllers", items:[
+ {id:"bms", tier:"chk", title:"BMS and controllers", note:"We check on site.", items:[
   ["bms_software","Head-end software","Make and version, graphics, alarm handling, trend logging, schedules."],
   ["bms_controllers","Controllers and outstations","Make, model, protocol and location across plantrooms and risers."],
   ["bms_integration","Integration","Which systems are integrated into the BMS and which are not."],
   ["bms_points","Points","Monitored and controlled points against the points list, where one exists."],
  ]},
- {id:"mep", tier:"chk", title:"MEP equipment and metering", items:[
+ {id:"mep", tier:"chk", title:"MEP equipment and metering", note:"We check on site.", items:[
   ["mep_chw","Chilled water (CHW)","Chillers, pumps, expansion tanks, control valves, heat exchangers."],
   ["mep_lthw","Low temperature hot water (LTHW)","Boilers, circulating pumps, buffer tanks, mixing valves."],
   ["mep_vent","Ventilation","AHUs, supply and extract fans, dampers, louvres."],
@@ -33657,13 +33749,13 @@ const DEF = [
   ["mep_check","Check metering","Sub-meters, power analysers, flow / BTU meters, NABERS in-use suitability."],
   ["mep_other","Any other systems","BMS controllers, sensors, actuators, power supplies, comms modules, anything else."],
  ]},
- {id:"info", tier:"opt", title:"Helpful if available — information", items:[
+ {id:"info", tier:"opt", title:"Site information", note:"Helpful if available.", items:[
   ["info_nonintegrated","Systems not integrated in the BMS","List each system and where it is controlled from."],
   ["info_variations","Variations / alterations","Strip-outs, refurbishments or planned works affecting the systems."],
   ["info_occupancy","% of building occupation","Occupied and vacant areas, by floor if known."],
   ["info_contacts","Contractor contacts","BMS contractor, M&E contractor, utility consultant, others on site."],
  ]},
- {id:"docs", tier:"opt", title:"Helpful if available — documentation", items:[
+ {id:"docs", tier:"opt", title:"Documentation", note:"Helpful if available.", items:[
   ["doc_om","Operation & Maintenance Manual","Received, location, or who holds it."],
   ["doc_points","BMS Points List","Received, location, or who holds it."],
   ["doc_desops","BMS Description of Operation","Received, location, or who holds it."],
@@ -34140,7 +34232,7 @@ function setSave(txt,warn){ const el=document.getElementById("saveState"); el.te
 function save(){ state.updated=new Date().toISOString(); clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{ const ok = await dbPut("current", state);
     if(ok){ setSave("Saved on this phone · "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})); try{ touchCatalogueEntry(); }catch(e){} }
-    else setSave("Not saving on this device — export before closing", true); }, 350); progress(); clearTimeout(attTimer); attTimer=setTimeout(()=>{paintAttention(); paintClass(); miscSum(); paintWorks();},250); }
+    else setSave("Not saving on this device — export before closing", true); }, 350); progress(); clearTimeout(attTimer); attTimer=setTimeout(()=>{paintAttention(); paintClass(); miscSum(); paintWorks(); paintRail();},250); }
 let attTimer=null;
 
 /* ---------------- render ---------------- */
@@ -34169,7 +34261,7 @@ function render(){
   m.appendChild(sd);
 
   const ad = document.createElement("details"); ad.className="panel"; ad.id="attPanel"; ad.open=true;
-  ad.innerHTML = `<summary><span class="sec-n" style="background:#D64545">!</span><span class="sec-t"><h2>Needs attention and next steps</h2><small id="attSum"></small></span><span class="chev">›</span></summary><div class="att" id="att"></div>`;
+  ad.innerHTML = `<summary><span class="sec-n" style="background:#D64545">!</span><span class="sec-t"><h2>Action tracker</h2><small id="attSum"></small></span><span class="chev">›</span></summary><div class="att" id="att"></div>`;
   m.appendChild(ad);
 
   const cd = document.createElement("details"); cd.className="panel"; cd.open=false;
@@ -34212,7 +34304,7 @@ function render(){
   DEF.forEach((sec,si)=>{
     const d = document.createElement("details"); d.className="panel"; d.open = si<2; d.dataset.sec=sec.id;
     const [tl,tc] = TIER[sec.tier];
-    d.innerHTML = `<summary><span class="sec-n">${si+1}</span><span class="sec-t"><h2>${esc(sec.title)} <span class="pill ${tc}">${tl}</span></h2><small data-count></small></span><span class="chev">›</span></summary>`;
+    d.innerHTML = `<summary><span class="sec-n">${si+1}</span><span class="sec-t"><h2>${esc(sec.title)} <span class="pill ${tc}">${tl}</span></h2>${sec.note?`<small class="tier-note ${tc}">${esc(sec.note)}</small>`:""}<small data-count></small></span><span class="chev">›</span></summary>`;
     sec.items.forEach(([id,t,hint,cred])=>d.appendChild(itemEl(id,t,hint,cred)));
     m.appendChild(d);
   });
@@ -34247,6 +34339,7 @@ function render(){
   $("#btnImport").onclick = ()=>$("#importFile").click();
   $("#btnNew").onclick = ()=>openCatalogueModal();
   siteSum(); paintCounts(); paintAttention(); paintClass(); signSum(); paintWorks();
+  buildRail();
 }
 function signSum(){ const el=$("#signSum"); if(!el) return; const so=state.signoff, s1=!!so.surveyor.sig, s2=!!so.client.sig;
   el.textContent = s1&&s2 ? `Signed by both · ${so.surveyor.date||""}` : s1 ? "Signed by surveyor/engineer · site representative to sign" : s2 ? "Signed by site representative · surveyor/engineer to sign" : "Not yet signed";
@@ -34390,11 +34483,11 @@ function paintPhotos(el){
       $("img",s).onclick = ()=>view(ph.data);
       $(".x",s).onclick = (e)=>{ e.stopPropagation(); if(!confirm("Remove this photo?")) return; it.photos.splice(i,1); paintItem(el); save(); };
     } else if(i===it.photos.length){
-      s.innerHTML = `<span>+ Add photo</span><input type="file" accept="image/*" multiple aria-label="Add photo">`;
-      $("input",s).onchange = async(e)=>{ const files=[...e.target.files].slice(0, MAX_PHOTOS-it.photos.length); if(!files.length) return;
+      s.innerHTML = `<button type="button" class="slot-add" aria-label="Add photo — take one or choose from your library"><span>+ Add photo</span></button>`;
+      $(".slot-add",s).onclick = ()=> photoSheet(async(list)=>{ const files=[...list].slice(0, MAX_PHOTOS-it.photos.length); if(!files.length) return;
         s.classList.add("busy"); $("span",s).textContent="Adding…";
-        for(const f of files){ try{ it.photos.push(await shrink(f)); }catch(err){ toast("Could not read that image"); } }
-        paintItem(el); save(); };
+        for(let f of files){ try{ it.photos.push(await shrink(await toJpeg(f))); }catch(err){ toast("Could not read that image"); } }
+        paintItem(el); save(); }, MAX_PHOTOS-it.photos.length>1);
     } else { s.style.opacity=.45; s.innerHTML = `<span>Photo ${i+1}</span>`; }
     box.appendChild(s);
   }
@@ -34416,6 +34509,7 @@ function progress(){
   $("#pDone").textContent=done; $("#pAll").textContent=all.length;
   $("#pReq").textContent = `Required ${reqDone}/${req.length}`;
   $("#pFill").style.width = (100*done/all.length)+"%";
+  paintRail();
 }
 function paintCounts(){ document.querySelectorAll("details[data-sec]").forEach(d=>{
   const sec = DEF.find(s=>s.id===d.dataset.sec), n = sec.items.filter(i=>itm(i[0]).status).length,
@@ -34424,6 +34518,75 @@ function paintCounts(){ document.querySelectorAll("details[data-sec]").forEach(d
 function siteSum(){ const s=state.site, el=$("#siteSum"); if(el) el.textContent = [s.name||"No site name yet", s.surveyor].filter(Boolean).join(" · "); }
 
 /* ---------------- viewer / toast ---------------- */
+/* camera or photo library, then the same resize the record uses */
+let sheetCb=null;
+function photoSheet(cb, multi){ sheetCb=cb; const sh=document.getElementById("ibPhotoSheet"); document.getElementById("ibLibInput").multiple=!!multi; sh.classList.add("open"); setTimeout(()=>document.getElementById("ibCamBtn").focus(),30); }
+function closeSheet(){ document.getElementById("ibPhotoSheet").classList.remove("open"); }
+async function toJpeg(f){ try{ if(typeof isHeic==="function" && isHeic(f) && window.heic2any){ const b=await window.heic2any({blob:f,toType:"image/jpeg",quality:0.9}); return new File([Array.isArray(b)?b[0]:b], (f.name||"photo").replace(/\.\w+$/,"")+".jpg", {type:"image/jpeg"}); } }catch(e){} return f; }
+(function(){ const sh=document.getElementById("ibPhotoSheet"); if(!sh) return;
+  const cam=document.getElementById("ibCamInput"), lib=document.getElementById("ibLibInput");
+  document.getElementById("ibCamBtn").onclick=()=>{ closeSheet(); cam.click(); };
+  document.getElementById("ibLibBtn").onclick=()=>{ closeSheet(); lib.click(); };
+  document.getElementById("ibSheetCancel").onclick=closeSheet;
+  sh.addEventListener("click",e=>{ if(e.target===sh) closeSheet(); });
+  [cam,lib].forEach(inp=>inp.addEventListener("change",()=>{ const files=[...inp.files]; inp.value=""; if(files.length && sheetCb) sheetCb(files); }));
+})();
+/* ---------------- section index: a rail on the left to jump between sections ---------------- */
+const RAIL_C={site:"#eef1ea",att:"#c9524a",cls:"#9b8ad1",val:"#4f9dc9",wk:"#d9704b",req:"#c97a3c",chk:"#9b8ad1",opt:"#8b9bb0",misc:"#8b9bb0",sign:"#7fae6a"};
+const RAIL_SHORT={min:"Access",net:"Network",bms:"BMS",mep:"MEP",info:"Info",docs:"Docs"};
+function railDefs(){
+  const main=$("#ibosMain"); if(!main) return [];
+  const P=[...main.querySelectorAll(":scope > details.panel")];
+  return P.map((d,i)=>{
+    if(!d.id){ if(d.classList.contains("ib-site")) d.id="sitePanel"; else if(d.querySelector("#clsResult")) d.id="clsPanel"; else if(d.dataset.sec) d.id="sec_"+d.dataset.sec; else d.id="ibPanel"+i; }
+    const sec=d.dataset.sec?DEF.find(s=>s.id===d.dataset.sec):null, si=sec?DEF.indexOf(sec)+1:0;
+    const k = d.id==="sitePanel"?"site": d.id==="attPanel"?"att": d.id==="clsPanel"?"cls": d.id==="valPanel"?"val": d.id==="wkPanel"?"wk": d.id==="miscPanel"?"misc": d.id==="signPanel"?"sign": sec?sec.tier:"opt";
+    const glyph = {site:"i",att:"!",cls:"C",val:"↗",wk:"W",misc:String(DEF.length+1),sign:"✓"}[k] || String(si);
+    const short = sec?RAIL_SHORT[sec.id]||sec.title.split(" ")[0] : {site:"Site",att:"Actions",cls:"Class",val:"Value",wk:"Works",misc:"Misc",sign:"Sign-off"}[k];
+    const full = (d.querySelector("summary h2")||{}).firstChild ? d.querySelector("summary h2").firstChild.textContent.trim() : short;
+    return {id:d.id, el:d, k, glyph, short, full, color:RAIL_C[k]||RAIL_C.opt, sec};
+  });
+}
+let railItems=[], railActive=null;
+function buildRail(){
+  let nav=document.getElementById("ibRail");
+  if(!nav){ nav=document.createElement("nav"); nav.id="ibRail"; nav.setAttribute("aria-label","Survey sections"); document.body.appendChild(nav);
+    window.addEventListener("scroll",()=>{ if(!railScrollQueued){ railScrollQueued=true; requestAnimationFrame(()=>{ railScrollQueued=false; spyRail(); }); } },{passive:true});
+    document.addEventListener("click",e=>{ if(nav.classList.contains("wide") && !nav.contains(e.target)) nav.classList.remove("wide"); }); }
+  railItems=railDefs();
+  nav.innerHTML=`<button type="button" class="rl-menu" aria-label="Show section names" aria-expanded="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="rl-t">Index</span></button>`+
+    railItems.map(it=>`<button type="button" class="rl-i" data-go="${it.id}" style="--rc:${it.color}" title="${esc(it.full)}"><span class="rl-ring"><span class="rl-ic">${esc(it.glyph)}</span><span class="rl-b" hidden></span></span><span class="rl-t">${esc(it.short)}</span><span class="rl-full"><b>${esc(it.full)}</b><small></small></span></button>`).join("")+
+    `<button type="button" class="rl-i rl-top" data-go="top" title="Back to top"><span class="rl-ring"><span class="rl-ic">↑</span></span><span class="rl-t">Top</span><span class="rl-full"><b>Back to top</b></span></button>`;
+  const menu=$(".rl-menu",nav); menu.onclick=e=>{ e.stopPropagation(); const w=nav.classList.toggle("wide"); menu.setAttribute("aria-expanded",w); };
+  nav.querySelectorAll("[data-go]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); goPanel(b.dataset.go); nav.classList.remove("wide"); menu.setAttribute("aria-expanded","false"); });
+  paintRail(); spyRail();
+}
+let railScrollQueued=false;
+function goPanel(id){
+  const smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
+  if(id==="top"){ window.scrollTo({top:0,behavior:smooth}); return; }
+  const d=document.getElementById(id); if(!d) return; d.open=true;
+  const y=d.getBoundingClientRect().top+window.scrollY-10;
+  window.scrollTo({top:Math.max(0,y),behavior:smooth}); setRailActive(id);
+  const s=d.querySelector("summary"); if(s){ try{ s.focus({preventScroll:true}); }catch(e){} }
+}
+function setRailActive(id){ if(railActive===id) return; railActive=id; const nav=document.getElementById("ibRail"); if(!nav) return;
+  nav.querySelectorAll(".rl-i").forEach(b=>{ const on=b.dataset.go===id; b.classList.toggle("on",on); if(on){ b.setAttribute("aria-current","true"); const r=b.getBoundingClientRect(), nr=nav.getBoundingClientRect(); if(r.top<nr.top+40||r.bottom>nr.bottom-20) b.scrollIntoView({block:"nearest"}); } else b.removeAttribute("aria-current"); }); }
+function spyRail(){ if(!railItems.length || document.getElementById("ibosApp").hidden) return;
+  let cur=railItems[0].id; for(const it of railItems){ if(it.el.getBoundingClientRect().top<=140) cur=it.id; else break; }
+  setRailActive(cur); }
+function paintRail(){ const nav=document.getElementById("ibRail"); if(!nav || !railItems.length) return;
+  railItems.forEach(it=>{ const b=nav.querySelector(`[data-go="${it.id}"]`); if(!b) return; const ring=$(".rl-ring",b), badge=$(".rl-b",b), sm=$(".rl-full small",b);
+    let pct=null, bt="", sub=((it.el.querySelector("summary small:last-of-type")||{}).textContent||"").trim();
+    if(it.sec){ const n=it.sec.items.filter(i=>itm(i[0]).status).length; pct=n/it.sec.items.length; if(n===it.sec.items.length) bt="✓"; }
+    if(it.k==="att"){ const a=assessment(); const hi=a.open.filter(r=>r.priority==="high").length, tot=a.open.length+a.pending.length; bt=tot?String(tot):""; badge.classList.toggle("hi",hi>0); }
+    if(it.k==="cls"){ const c=classification(); bt=c.level?"L"+c.level:""; }
+    if(it.k==="wk"){ const L=worksList(); const open=L.filter(w=>w.status!=="Agreed"&&w.status!=="Not required").length; bt=open?String(open):""; }
+    if(it.k==="sign"){ const so=state.signoff; const n=(so.surveyor.sig?1:0)+(so.client.sig?1:0); pct=n/2; if(n===2) bt="✓"; }
+    ring.style.setProperty("--p", pct===null? "0" : String(Math.round(pct*100)));
+    ring.classList.toggle("prog", pct!==null);
+    badge.hidden=!bt; badge.textContent=bt; badge.classList.toggle("done", bt==="✓");
+    if(sm) sm.textContent=sub; }); }
 function view(src){ if(window.openPhotoPreview) openPhotoPreview([src],0,"Photo"); }
 let tt; function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("on"),2600); }
 
@@ -34516,7 +34679,7 @@ function htmlReport(){ syncTimes();
     ${V.deps.length?`<p><b>What the projection depends on</b></p><ul>${V.deps.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}<p style="font-size:8.5pt;color:#6B7891">Indicative projection from the survey for discussion — not a guarantee of performance or savings.</p></div>`; }
   { const WL=worksList(); if(WL.length) h += `<div class="r-sec"><h2>Works and scope to confirm</h2><table class="r-att"><tr><th>Works item</th><th>Who confirms</th><th>Status</th><th>Notes</th></tr>${WL.map(w=>`<tr><td><b>${esc(w.title)}</b><br><span style="color:#6B7891">${esc(w.why)}</span></td><td>${esc(w.owner)}</td><td>${esc(w.status)}</td><td>${esc(w.notes)}</td></tr>`).join("")}</table></div>`; }
   const A=assessment();
-  h += `<div class="r-sec"><h2>Needs attention and next steps</h2>` + ((A.open.length||A.pending.length||A.confirmed.length)
+  h += `<div class="r-sec"><h2>Action tracker</h2>` + ((A.open.length||A.pending.length||A.confirmed.length)
     ? `<table class="r-att"><tr><th>Priority</th><th>Item</th><th>Next step / confirmation</th><th>Who confirms</th></tr>${
        A.open.map(r=>`<tr><td><span class="r-st" style="background:${PRIO_COLOR[r.priority]}">${PRIO_LABEL[r.priority]}</span></td><td><b>${esc(r.title)}</b><br>${esc(r.status)}</td><td>${esc(r.next_step)}</td><td>${esc(r.owner)}</td></tr>`).join("")}${
        A.pending.map(r=>`<tr><td><span class="r-st" style="background:#9AA7BD">Not checked</span></td><td><b>${esc(r.title)}</b></td><td>Required item not checked on the day.</td><td></td></tr>`).join("")}${
@@ -34782,7 +34945,7 @@ async function buildPdf(){ syncTimes();
     para("Indicative projection from the survey for discussion — not a guarantee of performance or savings.",{size:8,color:MUTE}); }
 
   /* attention */
-  const A=assessment(); h2("Needs attention and next steps");
+  const A=assessment(); h2("Action tracker");
   if(!(A.open.length||A.pending.length||A.confirmed.length)) para("Nothing outstanding.");
   else { const cx=[M, M+24, M+74, M+152], cw=[22,48,76,30];
     const head=()=>{ ensure(20); doc.setFillColor(...rgb(NAVY)); doc.rect(M,y,W,7,"F"); font(8,true,"#FFFFFF"); ["Priority","Item","Next step / confirmation","Who confirms"].forEach((t,i)=>doc.text(t,cx[i]+1.5,y+4.7)); y+=7; };
