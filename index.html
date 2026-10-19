@@ -29241,6 +29241,8 @@ return heic2any;
     --ventilation:#7fae6a;
     --dhw:#c9a63d;
     --dcw:#8fd3e8;
+    --water:#5ec2d6;
+    --hvac:#e8875f;
     --controls:#9b8ad1;
     --electrical:#d9c25a;
     --lighting:#d68bc4;
@@ -29372,6 +29374,8 @@ return heic2any;
   .tag-btn[data-tag="Ventilation"]{--cat:var(--ventilation);}
   .tag-btn[data-tag="DHW"]{--cat:var(--dhw);}
   .tag-btn[data-tag="DCW"]{--cat:var(--dcw);}
+  .tag-btn[data-tag="Water"]{--cat:var(--water);}
+  .tag-btn[data-tag="HVAC"]{--cat:var(--hvac);}
   .tag-btn[data-tag="Controls"]{--cat:var(--controls);}
   .tag-btn[data-tag="Electrical"]{--cat:var(--electrical);}
   .tag-btn[data-tag="Lighting"]{--cat:var(--lighting);}
@@ -29767,6 +29771,162 @@ return heic2any;
   .entry-oi::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--st);}
   .entry.flash{animation:oiFlash 1.2s ease;}
   @media (prefers-reduced-motion: reduce){ .oi-item.flash, .entry.flash{animation:none;} details.open-items summary .arrow{transition:none;} }
+
+  /* ---- Survey type (Energy Audit / IBOS survey) ---- */
+  .audit-bar .type-pill{
+    display:inline-flex; align-items:center; gap:5px; margin-top:7px; padding:3px 9px; min-height:26px;
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+    color:var(--muted); background:transparent; border:1px solid rgba(143,162,184,0.35); border-radius:999px;
+  }
+  .audit-bar .type-pill svg{width:10px; height:10px; opacity:0.85;}
+  .audit-bar .type-pill.ibos{color:var(--controls); border-color:color-mix(in srgb, var(--controls) 60%, transparent);}
+  .audit-bar .type-pill:focus-visible{outline:2px solid var(--paper); outline-offset:2px;}
+  /* Survey type picker */
+  .type-box{max-width:440px;}
+  .type-options{display:grid; gap:8px;}
+  .type-option{
+    display:grid; grid-template-columns:20px 1fr auto; gap:4px 10px; align-items:start; width:100%;
+    text-align:left; padding:12px; cursor:pointer; color:var(--paper);
+    background:var(--navy-panel-2); border:1.5px solid rgba(255,255,255,0.12); border-radius:10px;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  }
+  .type-option[data-type="energy"]{--tc:var(--copper);}
+  .type-option[data-type="ibos"]{--tc:var(--controls);}
+  .type-option .to-dot{
+    grid-row:1 / span 2; width:16px; height:16px; margin-top:2px; border-radius:50%;
+    border:2px solid rgba(255,255,255,0.35); box-sizing:border-box;
+  }
+  .type-option[aria-checked="true"]{border-color:var(--tc); background:color-mix(in srgb, var(--tc) 12%, var(--navy-panel-2));}
+  .type-option[aria-checked="true"] .to-dot{border-color:var(--tc); background:radial-gradient(circle, var(--tc) 0 4px, transparent 4.5px);}
+  .type-option:focus-visible{outline:2px solid var(--paper); outline-offset:2px;}
+  .type-option .to-name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14.5px;}
+  .type-option .to-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted);
+    border:1px solid rgba(143,162,184,0.35); border-radius:999px; padding:1px 7px; white-space:nowrap;
+  }
+  .type-option .to-tag:empty{display:none;}
+  .type-option .to-desc{grid-column:2 / span 2; font-size:12px; color:var(--muted); line-height:1.45;}
+  .type-note{
+    margin-top:12px; padding:10px 12px; border-radius:8px; font-size:12.5px; line-height:1.5;
+    background:rgba(127,217,154,0.08); border:1px solid rgba(127,217,154,0.3); color:var(--paper);
+  }
+  .type-note:empty{display:none;}
+  .type-note strong{color:#7fd99a;}
+  .type-actions{display:grid; grid-template-columns:1fr 1.4fr; gap:8px; margin-top:14px;}
+  .type-actions button{
+    min-height:44px; border-radius:8px; cursor:pointer; font-family:'Space Grotesk',sans-serif;
+    font-weight:600; font-size:13.5px;
+  }
+  .type-cancel{background:transparent; color:var(--paper); border:1px solid rgba(255,255,255,0.18);}
+  .type-confirm{background:var(--copper); color:var(--navy-deep); border:1px solid var(--copper);}
+  .type-confirm.ibos{background:var(--controls); border-color:var(--controls);}
+  .type-confirm:disabled{background:transparent; color:var(--muted); border-color:rgba(255,255,255,0.12); cursor:default;}
+  /* Category sub-type (e.g. Water: hot or cold) */
+  .subtype-field{margin:-2px 0 12px;}
+  .subtype-field[hidden]{display:none;}
+  .subtype-field .bf-label{font-size:12.5px; margin-bottom:6px;}
+  .seg-btn[data-tone="dhw"]{--tone:var(--dhw);}
+  .seg-btn[data-tone="dcw"]{--tone:var(--dcw);}
+  .seg-btn[data-tone="heating"]{--tone:var(--heating);}
+  .seg-btn[data-tone="cooling"]{--tone:var(--cooling);}
+  .seg-btn[data-tone="ventilation"]{--tone:var(--ventilation);}
+  .seg-btn[data-tone="heatcool"]{--tone:var(--heating);}
+  /* Each option is outlined in its own colour, and filled with it once chosen */
+  .subtype-field .seg-btn{border-color:var(--tone);}
+  .subtype-field .seg-btn[data-tone="heatcool"]{border-color:var(--heating) var(--cooling) var(--cooling) var(--heating);}
+  .subtype-field .seg-btn[data-tone="heatcool"][aria-pressed="true"]{background:linear-gradient(115deg, var(--heating), var(--cooling));}
+  .subtype-field #scopeLabel{margin-top:16px;}
+  .subtype-field .bf-hint{margin:-3px 0 7px;}
+  .subtype-field .seg.two-col{grid-template-columns:1fr 1fr;}
+  .subtype-error{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--heating); margin-top:6px;}
+  .subtype-error:empty{display:none;}
+  .subtype-field.needs > .bf-label:first-child{color:var(--heating);}
+  .entry-subtype{
+    display:inline-block; margin-top:4px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+    color:var(--st); border:1px solid color-mix(in srgb, var(--st) 55%, transparent); border-radius:999px; padding:1px 8px;
+  }
+  .new-audit-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;}
+  .new-audit-row .new-audit-btn{margin-bottom:0;}
+  .new-audit-btn.ibos{
+    background:color-mix(in srgb, var(--controls) 18%, var(--navy-panel)); color:var(--paper);
+    border:1.5px solid var(--controls);
+  }
+  .ci-type.ibos{color:var(--controls);}
+
+  /* ---- BMS networking section (IBOS surveys only) ---- */
+  details.bms-info{border-left:3px solid var(--controls);}
+  details.bms-info[hidden]{display:none;}
+  details.bms-info summary{gap:10px;}
+  details.bms-info summary .arrow{white-space:nowrap; flex:0 0 auto;}
+  .bms-title{display:flex; flex-direction:column; gap:4px;}
+  .bms-progress{font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500; color:var(--muted);}
+  .bms-progress.done{color:#7fd99a;}
+  .bms-group{border-top:1px solid var(--grid-line); padding-top:14px; margin-top:6px;}
+  .bms-group:first-child{border-top:none; padding-top:0; margin-top:0;}
+  .bms-group h3{
+    font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:700; color:var(--controls);
+    margin:0 0 12px; letter-spacing:0.01em;
+  }
+  .bf{margin-bottom:16px;}
+  .bf[hidden]{display:none;}
+  .bf-label{
+    display:block; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px;
+    color:var(--paper); line-height:1.3; margin-bottom:7px;
+  }
+  .bf-label.has-hint{margin-bottom:2px;}
+  .bf-hint{display:block; font-size:11.5px; color:var(--muted); line-height:1.4; margin-bottom:8px;}
+  .bf input[type=text], .bf select, .bf textarea{margin-bottom:0;}
+  .seg{display:grid; grid-template-columns:repeat(var(--n), 1fr); gap:6px;}
+  .seg-btn{
+    min-height:42px; padding:6px 4px; cursor:pointer; line-height:1.15;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; color:var(--paper);
+    background:var(--navy-panel-2); border:1.5px solid rgba(255,255,255,0.13); border-radius:8px;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .08s ease;
+  }
+  .seg-btn[data-tone="yes"]{--tone:var(--ventilation);}
+  .seg-btn[data-tone="no"]{--tone:var(--issues);}
+  .seg-btn[data-tone="partner"]{--tone:var(--dhw);}
+  .seg-btn[data-tone="na"]{--tone:var(--other);}
+  .seg-btn[data-tone="neutral"]{--tone:var(--controls);}
+  .seg-btn[aria-pressed="true"]{background:var(--tone); border-color:var(--tone); color:var(--navy-deep); font-weight:700;}
+  .seg-btn:active{transform:scale(0.97);}
+  .seg-btn:focus-visible, .chip-btn:focus-visible{outline:2px solid var(--paper); outline-offset:2px;}
+  .chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip-btn{
+    display:inline-flex; align-items:center; gap:5px; min-height:38px; padding:6px 12px; cursor:pointer;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px; color:var(--paper);
+    border:1.5px solid var(--controls); border-radius:999px;
+    background:color-mix(in srgb, var(--controls) 14%, var(--navy-panel));
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  }
+  .chip-btn[aria-pressed="true"]{background:var(--controls); color:var(--navy-deep); font-weight:700;}
+  .chip-btn[aria-pressed="true"]::before{content:'✓'; font-size:12px;}
+  .ip-range{display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center;}
+  .ip-range .to{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted);}
+  .ip-range input, .bf input[data-ip], .bf input[data-mask-custom]{font-family:'IBM Plex Mono',monospace; font-size:13.5px; min-width:0;}
+  .bf .bf-sub{margin-top:8px;}
+  .bf-warn{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--heating); margin-top:6px; line-height:1.4;}
+  .bf-warn:empty{display:none;}
+  .suffix-wrap{position:relative;}
+  .suffix-wrap input{padding-right:36px;}
+  .suffix-wrap .suffix{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);
+  }
+  .ibos-use-row{margin:2px 0 12px;}
+  .ibos-use-row[hidden]{display:none;}
+  .ibos-use-row label{
+    display:block; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px;
+    color:var(--controls); margin-bottom:5px;
+  }
+  .ibos-use-row select{margin-bottom:0; border-color:color-mix(in srgb, var(--controls) 45%, transparent);}
+  .entry-ibos{
+    display:inline-block; margin-top:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+    color:var(--controls); border:1px solid color-mix(in srgb, var(--controls) 50%, transparent);
+    border-radius:999px; padding:2px 8px;
+  }
+  @media (max-width:380px){ .seg-btn{font-size:12px;} .ip-range{grid-template-columns:1fr;} .ip-range .to{display:none;} }
+  @media (prefers-reduced-motion: reduce){ .seg-btn{transition:none;} .seg-btn:active{transform:none;} }
 </style>
 </head>
 <body>
@@ -29790,8 +29950,37 @@ return heic2any;
     <div class="audit-info">
       <div class="audit-name" id="activeAuditName">Loading...</div>
       <div class="audit-sub" id="activeAuditSub"></div>
+      <button type="button" class="type-pill" id="surveyTypeBtn"></button>
     </div>
     <button id="openCatalogueBtn">My Surveys</button>
+  </div>
+
+  <div class="modal-overlay" id="typeOverlay">
+    <div class="modal-box type-box" role="dialog" aria-modal="true" aria-labelledby="typeTitle">
+      <div class="modal-header">
+        <h2 id="typeTitle">Survey type</h2>
+        <button class="modal-close" id="closeTypeBtn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="type-options" role="radiogroup" aria-labelledby="typeTitle">
+          <button type="button" class="type-option" data-type="energy" role="radio" aria-checked="false">
+            <span class="to-dot" aria-hidden="true"></span>
+            <span class="to-name">Energy Audit</span><span class="to-tag"></span>
+            <span class="to-desc">Building information, log entries and open items. Exports the survey notes.</span>
+          </button>
+          <button type="button" class="type-option" data-type="ibos" role="radio" aria-checked="false">
+            <span class="to-dot" aria-hidden="true"></span>
+            <span class="to-name">IBOS survey</span><span class="to-tag"></span>
+            <span class="to-desc">Everything in an Energy Audit, plus the BMS Networking section and the IBOS Site Survey export.</span>
+          </button>
+        </div>
+        <div class="type-note" id="typeNote" aria-live="polite"></div>
+        <div class="type-actions">
+          <button type="button" class="type-cancel" id="typeCancelBtn">Cancel</button>
+          <button type="button" class="type-confirm" id="typeConfirmBtn" disabled>No change</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="catalogueOverlay">
@@ -29801,7 +29990,10 @@ return heic2any;
         <button class="modal-close" id="closeCatalogueBtn">✕</button>
       </div>
       <div class="modal-body">
-        <button class="new-audit-btn" id="newAuditBtn">+ Start new survey</button>
+        <div class="new-audit-row">
+          <button class="new-audit-btn" id="newAuditBtn">+ New Energy Audit</button>
+          <button class="new-audit-btn ibos" id="newIbosBtn">+ New IBOS survey</button>
+        </div>
         <div id="catalogueList"></div>
       </div>
     </div>
@@ -29833,11 +30025,8 @@ return heic2any;
     <div class="section-label" id="entryFormLabel">New entry</div>
 
     <div class="tag-grid" id="tagGrid">
-      <button class="tag-btn" data-tag="Heating">Heating</button>
-      <button class="tag-btn" data-tag="Cooling">Cooling</button>
-      <button class="tag-btn" data-tag="Ventilation">Ventilation</button>
-      <button class="tag-btn" data-tag="DHW">DHW</button>
-      <button class="tag-btn" data-tag="DCW">DCW</button>
+      <button class="tag-btn" data-tag="HVAC">HVAC</button>
+      <button class="tag-btn" data-tag="Water">Water</button>
       <button class="tag-btn" data-tag="Controls">Controls</button>
       <button class="tag-btn" data-tag="Electrical">Electrical</button>
       <button class="tag-btn" data-tag="Lighting">Lighting</button>
@@ -29846,6 +30035,8 @@ return heic2any;
       <button class="tag-btn" data-tag="Other">Other</button>
       <button class="tag-btn" data-tag="Issues">Issues</button>
     </div>
+
+    <div class="subtype-field" id="subtypeField" hidden></div>
 
     <div class="meter-fields" id="meterFields">
       <select id="meterType">
@@ -29914,9 +30105,33 @@ return heic2any;
     </div>
     <div class="photo-row" id="photoRow"></div>
 
+    <div class="ibos-use-row" id="ibosUseRow" hidden>
+      <label for="ibosUse">Photos in the IBOS form</label>
+      <select id="ibosUse">
+        <option value="">Not included</option>
+        <option value="graphic">BMS graphic (BMS screen)</option>
+        <option value="ethernet">Ethernet access point</option>
+        <option value="power">Power access point</option>
+        <option value="rack">6U rack location</option>
+        <option value="attention">Needs attention</option>
+        <option value="visual">Building visual (plant, risers, switchrooms)</option>
+      </select>
+    </div>
+
     <button class="btn-primary" id="saveEntryBtn">Log entry</button>
     <button class="btn-cancel-edit" id="cancelEditBtn" style="display:none;">Cancel edit</button>
   </div>
+
+  <details class="building-info bms-info" id="bmsPanel" open hidden>
+    <summary>
+      <span class="bms-title">BMS Networking Information<span class="bms-progress" id="bmsProgress"></span></span>
+      <span class="arrow">▾ tap to collapse</span>
+    </summary>
+    <div class="bi-body">
+      <div id="bmsFields"></div>
+      <div class="bi-saved" id="bmsSaved">Auto-saves as you type</div>
+    </div>
+  </details>
 
   <details class="building-info open-items" id="openItemsPanel" open>
     <summary>
@@ -29936,11 +30151,8 @@ return heic2any;
         <input type="text" id="oiNewText" placeholder="e.g. BMS heating setpoints and schedules" enterkeyhint="done" />
         <select id="oiNewCategory" aria-label="Category">
           <option value="General">General</option>
-          <option value="Heating">Heating</option>
-          <option value="Cooling">Cooling</option>
-          <option value="Ventilation">Ventilation</option>
-          <option value="DHW">DHW</option>
-          <option value="DCW">DCW</option>
+          <option value="HVAC">HVAC</option>
+          <option value="Water">Water</option>
           <option value="Controls">Controls</option>
           <option value="Electrical">Electrical</option>
           <option value="Lighting">Lighting</option>
@@ -30106,13 +30318,111 @@ function tick(){
 }
 tick(); setInterval(tick, 30000);
 
+/* -------------------------------------------------------------------------
+   CATEGORY SUB-TYPES
+   Some categories need one more choice to stay useful in reports. Water
+   covers both hot (DHW) and cold (DCW) water; the choice is required and
+   exports keep the two apart. Add another category here to give it the
+   same picker.
+   ------------------------------------------------------------------------- */
+const ENTRY_SUBTYPES = {
+  HVAC: { label:'Type', options:[
+    { value:'Heating', label:'Heating', tone:'heating' },
+    { value:'Cooling', label:'Cooling', tone:'cooling' },
+    { value:'HeatCool', label:'Heating & cooling', tone:'heatcool' },
+    { value:'Ventilation', label:'Ventilation', tone:'ventilation' }
+  ],
+  // Optional second choice, so local kit (panel heaters, split AC) is recorded as such
+  scope: { label:'Central plant or local unit? (optional)', hint:'Local: e.g. electric panel heater, split AC in an office.', options:[
+    { value:'Central', label:'Central plant', tone:'na' },
+    { value:'Local', label:'Local unit', tone:'na' }
+  ]}},
+  Water: { label:'Type', options:[
+    { value:'DHW', label:'DHW', tone:'dhw' },
+    { value:'DCW', label:'DCW', tone:'dcw' }
+  ]}
+};
+let selectedSubtype = null;
+let selectedScope = null;
+
+function subtypeLabel(tag, value){
+  const cfg = ENTRY_SUBTYPES[tag];
+  const opt = cfg && cfg.options.find(o=> o.value === value);
+  return opt ? opt.label : '';
+}
+function subtypeTone(tag, value){
+  const cfg = ENTRY_SUBTYPES[tag];
+  const opt = cfg && cfg.options.find(o=> o.value === value);
+  if(!opt) return 'other';
+  return opt.tone === 'heatcool' ? 'hvac' : opt.tone;
+}
+function scopeLabel(tag, value){
+  const cfg = ENTRY_SUBTYPES[tag];
+  const opt = cfg && cfg.scope && cfg.scope.options.find(o=> o.value === value);
+  return opt ? opt.label : '';
+}
+// Card chip text, e.g. "Heating · Local unit"
+function subtypeChipText(e){
+  return [subtypeLabel(e.tag, e.subtype), scopeLabel(e.tag, e.scope)].filter(Boolean).join(' · ');
+}
+
+// Entries logged before Water / HVAC existed used separate categories: fold them in, keeping the type
+const LEGACY_CATEGORY = { DHW:'Water', DCW:'Water', Heating:'HVAC', Cooling:'HVAC', Ventilation:'HVAC' };
+function normalizeEntryCategory(e){
+  if(e && LEGACY_CATEGORY[e.tag]){
+    e.subtype = e.subtype || e.tag;
+    e.tag = LEGACY_CATEGORY[e.tag];
+  }
+  return e;
+}
+
+// Export / report grouping key: Water splits into its hot and cold sections
+// HVAC splits back into Heating / Cooling / Heating & Cooling / Ventilation so reports keep end uses apart
+const WATER_GROUP = { DHW:'Water – Hot water (DHW)', DCW:'Water – Cold water (DCW)' };
+const HVAC_GROUP = { Heating:'Heating', Cooling:'Cooling', HeatCool:'Heating & Cooling (heat pumps, VRF, reversible units)', Ventilation:'Ventilation' };
+function exportGroupOf(e){
+  if(e.tag === 'Water') return WATER_GROUP[e.subtype] || 'Water';
+  if(e.tag === 'HVAC') return HVAC_GROUP[e.subtype] || 'HVAC';
+  return e.tag;
+}
+
+function renderSubtypeField(){
+  const box = el('subtypeField');
+  const cfg = ENTRY_SUBTYPES[selectedTag];
+  if(!cfg){ box.hidden = true; box.innerHTML = ''; box.classList.remove('needs'); return; }
+  box.hidden = false;
+  const seg = (opts, attr, current, labelId)=> `<div class="seg${opts.length === 4 ? ' two-col' : ''}" role="group" aria-labelledby="${labelId}" style="--n:${opts.length}">
+      ${opts.map(o=> `<button type="button" class="seg-btn" ${attr}="${escapeHtml(o.value)}" data-tone="${o.tone || 'neutral'}" aria-pressed="${current === o.value}">${escapeHtml(o.label)}</button>`).join('')}
+    </div>`;
+  box.innerHTML = `<span class="bf-label" id="subtypeLabel">${escapeHtml(cfg.label)}</span>
+    ${seg(cfg.options, 'data-subtype', selectedSubtype, 'subtypeLabel')}
+    <div class="subtype-error" id="subtypeError" aria-live="polite"></div>
+    ${cfg.scope ? `<span class="bf-label${cfg.scope.hint ? ' has-hint' : ''}" id="scopeLabel">${escapeHtml(cfg.scope.label)}</span>
+      ${cfg.scope.hint ? `<span class="bf-hint">${escapeHtml(cfg.scope.hint)}</span>` : ''}
+      ${seg(cfg.scope.options, 'data-scope', selectedScope, 'scopeLabel')}` : ''}`;
+  box.classList.remove('needs');
+}
+
+el('subtypeField').addEventListener('click', (e)=>{
+  const b = e.target.closest('.seg-btn[data-subtype]');
+  const sc = e.target.closest('.seg-btn[data-scope]');
+  if(b) selectedSubtype = b.dataset.subtype;
+  else if(sc) selectedScope = selectedScope === sc.dataset.scope ? null : sc.dataset.scope; // optional: tap again to clear
+  else return;
+  renderSubtypeField();
+  saveDraft();
+});
+
 // Tag selection
 document.querySelectorAll('.tag-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.tag-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
+    if(btn.dataset.tag !== selectedTag){ selectedSubtype = null; selectedScope = null; }
     selectedTag = btn.dataset.tag;
+    renderSubtypeField();
     el('meterFields').classList.toggle('visible', selectedTag === 'Metering');
+    if(selectedTag === 'Controls' && !el('ibosUse').value && currentSurveyType() === 'ibos') el('ibosUse').value = 'graphic';
     saveDraft();
   });
 });
@@ -30125,7 +30435,7 @@ function scheduleDraftSave(){
   clearTimeout(draftSaveTimer);
   draftSaveTimer = setTimeout(saveDraft, 400);
 }
-['entryNo','asset','location','note','meterType','meterNumber','amrInstalled'].forEach(id=>{
+['entryNo','asset','location','note','meterType','meterNumber','amrInstalled','ibosUse'].forEach(id=>{
   const node = el(id);
   if(node) node.addEventListener('input', scheduleDraftSave);
 });
@@ -30264,6 +30574,12 @@ el('saveEntryBtn').addEventListener('click', async ()=>{
   const location = el('location').value.trim();
   const note = el('note').value.trim();
   if(!selectedTag){ alert('Pick a category first.'); return; }
+  if(ENTRY_SUBTYPES[selectedTag] && !selectedSubtype){
+    el('subtypeField').classList.add('needs');
+    el('subtypeError').textContent = 'Choose a type before logging.';
+    el('subtypeField').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'center' });
+    return;
+  }
   if(!entryNo && !asset && !location && !note){ alert('Fill in at least one of No., Asset, Location, or Note.'); return; }
 
   const isEditing = !!editingEntryId;
@@ -30282,11 +30598,14 @@ el('saveEntryBtn').addEventListener('click', async ()=>{
   }
 
   entry.tag = selectedTag;
+  if(ENTRY_SUBTYPES[selectedTag]) entry.subtype = selectedSubtype; else delete entry.subtype;
+  if(ENTRY_SUBTYPES[selectedTag] && ENTRY_SUBTYPES[selectedTag].scope && selectedScope) entry.scope = selectedScope; else delete entry.scope;
   entry.entryNo = entryNo;
   entry.asset = asset;
   entry.location = location;
   entry.note = note;
   entry.photos = pendingPhotos.slice();
+  if(currentSurveyType() === 'ibos') entry.ibosUse = el('ibosUse').value;
   if(selectedTag === 'Metering'){
     entry.meterType = el('meterType').value;
     entry.meterNumber = el('meterNumber').value.trim();
@@ -30311,9 +30630,13 @@ el('saveEntryBtn').addEventListener('click', async ()=>{
 function resetEntryForm(){
   el('entryNo').value=''; el('asset').value=''; el('location').value=''; el('note').value=''; pendingPhotos=[]; renderPendingPhotos();
   el('meterType').value=''; el('meterNumber').value=''; el('amrInstalled').value='';
+  el('ibosUse').value='';
   el('meterFields').classList.remove('visible');
   document.querySelectorAll('.tag-btn').forEach(b=>b.classList.remove('active'));
   selectedTag = null;
+  selectedSubtype = null;
+  selectedScope = null;
+  renderSubtypeField();
   setOiToggle(false);
   exitEditMode();
 }
@@ -30326,11 +30649,16 @@ function enterEditMode(entry){
   el('note').value = entry.note || '';
   pendingPhotos = Array.isArray(entry.photos) ? entry.photos.slice() : [];
   renderPendingPhotos();
+  normalizeEntryCategory(entry);
   selectedTag = entry.tag || null;
+  selectedSubtype = entry.subtype || null;
+  selectedScope = entry.scope || null;
   document.querySelectorAll('.tag-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.tag === selectedTag);
   });
+  renderSubtypeField();
   el('meterFields').classList.toggle('visible', selectedTag === 'Metering');
+  el('ibosUse').value = ibosUseOf(entry);
   if(selectedTag === 'Metering'){
     el('meterType').value = entry.meterType || '';
     el('meterNumber').value = entry.meterNumber || '';
@@ -30387,6 +30715,9 @@ function collectDraftState(){
     meterNumber: el('meterNumber').value,
     amrInstalled: el('amrInstalled').value,
     sendToOpenItems: el('sendToOpenItems').checked,
+    ibosUse: el('ibosUse').value,
+    subtype: selectedSubtype,
+    scope: selectedScope,
     editingEntryId,
     savedAt: new Date().toISOString()
   };
@@ -30446,14 +30777,19 @@ async function restoreDraftIfAny(){
     el('meterType').value = d.meterType || '';
     el('meterNumber').value = d.meterNumber || '';
     el('amrInstalled').value = d.amrInstalled || '';
+    el('ibosUse').value = d.ibosUse || '';
     pendingPhotos = Array.isArray(d.pendingPhotos) ? d.pendingPhotos.slice() : [];
     renderPendingPhotos();
     setOiToggle(!!d.sendToOpenItems);
     if(d.selectedTag){
-      selectedTag = d.selectedTag;
+      const legacy = normalizeEntryCategory({ tag: d.selectedTag, subtype: d.subtype || null });
+      selectedTag = legacy.tag;
+      selectedSubtype = legacy.subtype || null;
+      selectedScope = d.scope || null;
       document.querySelectorAll('.tag-btn').forEach(b=>{
         b.classList.toggle('active', b.dataset.tag === selectedTag);
       });
+      renderSubtypeField();
       el('meterFields').classList.toggle('visible', selectedTag === 'Metering');
     }
     // Only resume edit mode if the entry being edited still actually exists —
@@ -30490,7 +30826,7 @@ async function loadEntriesForCurrentAudit(){
           if(res) loaded.push(JSON.parse(res.value));
         }catch(e){}
       }
-      loaded.forEach(e=> e.synced = true);
+      loaded.forEach(e=>{ e.synced = true; normalizeEntryCategory(e); });
       loaded.sort((a,b)=> b.id.localeCompare(a.id));
       entries = loaded;
     }
@@ -30520,6 +30856,7 @@ function scheduleBuildingInfoSave(){
 }
 
 async function saveBuildingInfo(){
+  biSaveTimer = null;
   if(!currentAuditId) return;
   const data = {};
   biFields.forEach(id=> data[id] = el(id).value);
@@ -30539,6 +30876,568 @@ biFields.forEach(id=>{
   el(id).addEventListener('input', scheduleBuildingInfoSave);
 });
 
+
+/* =========================================================================
+   SURVEY TYPE + BMS NETWORKING INFORMATION (IBOS surveys)
+   -------------------------------------------------------------------------
+   Each survey's catalogue record carries a type: 'energy' (Energy Audit,
+   the default for older surveys) or 'ibos' (IBOS survey). IBOS surveys get
+   the extra BMS Networking Information panel; everything else is shared.
+   The panel is built from BMS_SCHEMA, which also drives autosave, the
+   progress count and the export, so adding a field is a one-line change.
+   BMS answers are stored per survey under audit:<id>:bms.
+   ========================================================================= */
+const SURVEY_TYPE_LABEL = { energy: 'Energy Audit', ibos: 'IBOS survey' };
+
+function currentSurveyType(){
+  const item = catalogue.find(a=>a.id === currentAuditId);
+  return item && item.type === 'ibos' ? 'ibos' : 'energy';
+}
+function surveyTypeOf(item){ return item && item.type === 'ibos' ? 'ibos' : 'energy'; }
+
+// Statuses match the IBOS site survey checklist columns
+const BMS_CHECK = [
+  { value:'Yes', tone:'yes' },
+  { value:'No', tone:'no' },
+  { value:'Tech Partner to do', label:'Tech partner', tone:'partner' },
+  { value:'N/A', tone:'na' }
+];
+const bmsOpts = (...vals)=> vals.map(v=>({ value:v, tone:'neutral' }));
+const SUBNET_PRESETS = [
+  ['255.255.255.0','/24'], ['255.255.0.0','/16'], ['255.0.0.0','/8'],
+  ['255.255.255.128','/25'], ['255.255.255.192','/26'], ['255.255.254.0','/23'], ['255.255.252.0','/22']
+];
+const BMS_PROTOCOLS = ['BACnet IP','BACnet MS/TP','Modbus TCP','Modbus RTU','LonWorks','KNX','Other'];
+
+const BMS_SCHEMA = [
+  { group:'Site access and BMS PC', fields:[
+    { id:'pcInBuilding', label:'BMS PC in the building?', type:'choice', options:bmsOpts('Yes','No','Unsure') },
+    { id:'noPcComment', label:'Comment (no BMS PC)', type:'textarea', showIf:d=>d.pcInBuilding === 'No',
+      placeholder:'How is the BMS accessed? e.g. remote head-end, controls contractor laptop' },
+    { id:'accessPcLocation', label:'Access to the location of the BMS PC', type:'choice', options:BMS_CHECK },
+    { id:'pcLogin', label:'Login details for the BMS PC', hint:'Credentials for the computer itself. Can be provided on the day.', type:'choice', options:BMS_CHECK },
+    { id:'appLogin', label:'Login details for the BMS application', hint:'Separate credentials to view graphics, alarms and trends.', type:'choice', options:BMS_CHECK },
+    { id:'loginHolder', label:'Who holds the login details', hint:'Record the contact only, never the username or password.', type:'text', placeholder:'Name, company, phone' },
+    { id:'parking', label:'Parking space', type:'choice', options:BMS_CHECK }
+  ]},
+  { group:'Connectivity', fields:[
+    { id:'powerAccess', label:'Access point to power', hint:'Can be checked on the day or from schematics.', type:'choice', options:BMS_CHECK },
+    { id:'ethernetAccess', label:'Access point to the BMS via Ethernet', hint:'Can be checked on the day or from schematics.', type:'choice', options:BMS_CHECK },
+    { id:'networkType', label:'Network type', type:'choice', options:bmsOpts('Wi-Fi','Hardwired','Both') },
+    { id:'networksCount', label:'Number of networks connected to the Site Supervisor PC', type:'number', placeholder:'e.g. 2' },
+    { id:'switchDistance', label:'Distance from main switch / Wi-Fi router to the PC or network', type:'number', suffix:'m', placeholder:'e.g. 15' },
+    { id:'router4g', label:'4G router required to provide internet to the device?', type:'choice', options:bmsOpts('Yes','No','TBC') }
+  ]},
+  { group:'Network configuration', fields:[
+    { id:'managedNetwork', label:'Does the site have a managed IT network?', hint:'The IT / network contractor can confirm this.', type:'choice', options:bmsOpts('Managed','Unmanaged','Unknown') },
+    { id:'itContractor', label:'IT / network contractor', type:'text', placeholder:'Company and contact details',
+      showIf:d=>d.managedNetwork === 'Managed' || d.managedNetwork === 'Unknown' },
+    { id:'protocols', label:'BMS protocol / format', hint:'Select all that apply.', type:'multi', options:BMS_PROTOCOLS },
+    { id:'protocolOther', label:'Other protocol', type:'text', placeholder:'e.g. Trend, Mitsubishi M-NET', exportSkip:true,
+      showIf:d=>Array.isArray(d.protocols) && d.protocols.includes('Other') },
+    { id:'bmsRange', label:'Range of the BMS network', type:'iprange' },
+    { id:'bmsSubnet', label:'BMS network subnet mask', type:'mask' },
+    { id:'inetRange', label:'Range of the internet-enabled network', type:'iprange' },
+    { id:'inetSubnet', label:'Internet-enabled network subnet mask', type:'mask' }
+  ]},
+  { group:'Installation', fields:[
+    { id:'rackSpace', label:'Sufficient space for a 6U rack', type:'choice', options:bmsOpts('Yes','No','Unsure') },
+    { id:'rackLocation', label:'Potential location of the 6U rack', hint:'Log photos of the BMS PC, switches and rack location under Controls.', type:'text', placeholder:'e.g. Comms room, 2nd floor' },
+    { id:'notes', label:'Other networking notes', type:'textarea', uncounted:true, placeholder:'Anything else IBOS should know' }
+  ]}
+];
+const BMS_FIELDS = BMS_SCHEMA.flatMap(g=> g.fields);
+
+let bmsData = {};
+
+function bmsKey(){ return `audit:${currentAuditId}:bms`; }
+
+function bmsVisible(f){ return !f.showIf || f.showIf(bmsData); }
+function bmsAnswered(f){
+  if(f.type === 'multi') return Array.isArray(bmsData[f.id]) && bmsData[f.id].length > 0;
+  if(f.type === 'iprange') return !!(String(bmsData[f.id+'From']||'').trim() || String(bmsData[f.id+'To']||'').trim());
+  return !!String(bmsData[f.id] || '').trim();
+}
+function bmsHasData(){ return BMS_FIELDS.some(bmsAnswered); }
+
+// --- Validation (warnings only; never blocks saving) ---
+const IPV4_RE = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
+function isValidIp(v){
+  const m = String(v).trim().match(/^([^/]+)(?:\/(\d{1,2}))?$/);
+  return !!m && IPV4_RE.test(m[1]) && (m[2] === undefined || +m[2] <= 32);
+}
+function isValidMask(v){
+  v = String(v).trim();
+  if(/^\/(\d|[12]\d|3[0-2])$/.test(v)) return true;
+  if(!IPV4_RE.test(v)) return false;
+  const n = v.split('.').reduce((acc, o)=> (acc * 256) + Number(o), 0) >>> 0;
+  const inv = (~n) >>> 0;
+  return (inv & (inv + 1)) === 0; // ones must be contiguous from the left
+}
+
+function bmsFieldHtml(f){
+  const fid = `bms_${f.id}`;
+  const hint = f.hint ? `<span class="bf-hint">${escapeHtml(f.hint)}</span>` : '';
+  const lblCls = 'bf-label' + (f.hint ? ' has-hint' : '');
+  const ph = f.placeholder ? ` placeholder="${escapeHtml(f.placeholder)}"` : '';
+  const groupLabel = `<span class="${lblCls}" id="${fid}_l">${escapeHtml(f.label)}</span>`;
+  const forLabel = `<label class="${lblCls}" for="${fid}">${escapeHtml(f.label)}</label>`;
+  let control = '';
+  switch(f.type){
+    case 'choice':
+      return `<div class="bf" data-field="${f.id}">${groupLabel}${hint}
+        <div class="seg" role="group" aria-labelledby="${fid}_l" style="--n:${f.options.length}">
+          ${f.options.map(o=>`<button type="button" class="seg-btn" data-key="${f.id}" data-value="${escapeHtml(o.value)}" data-tone="${o.tone||'neutral'}" aria-pressed="false">${escapeHtml(o.label||o.value)}</button>`).join('')}
+        </div></div>`;
+    case 'multi':
+      return `<div class="bf" data-field="${f.id}">${groupLabel}${hint}
+        <div class="chips" role="group" aria-labelledby="${fid}_l">
+          ${f.options.map(o=>`<button type="button" class="chip-btn" data-multi="${f.id}" data-value="${escapeHtml(o)}" aria-pressed="false">${escapeHtml(o)}</button>`).join('')}
+        </div></div>`;
+    case 'iprange':
+      return `<div class="bf" data-field="${f.id}">${groupLabel}${hint}
+        <div class="ip-range">
+          <input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-key="${f.id}From" data-ip="${f.id}" placeholder="192.168.1.1" aria-label="${escapeHtml(f.label)}: from" />
+          <span class="to">to</span>
+          <input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" data-key="${f.id}To" data-ip="${f.id}" placeholder="192.168.1.254" aria-label="${escapeHtml(f.label)}: to" />
+        </div>
+        <div class="bf-warn" data-warn-for="${f.id}" aria-live="polite"></div></div>`;
+    case 'mask':
+      return `<div class="bf" data-field="${f.id}">${forLabel}${hint}
+        <select id="${fid}" data-mask="${f.id}">
+          <option value="">Select subnet mask…</option>
+          ${SUBNET_PRESETS.map(([m,c])=>`<option value="${m}">${m} (${c})</option>`).join('')}
+          <option value="custom">Custom…</option>
+        </select>
+        <input type="text" class="bf-sub" inputmode="decimal" autocomplete="off" spellcheck="false" data-key="${f.id}" data-mask-custom="${f.id}" placeholder="e.g. 255.255.255.224 or /27" aria-label="${escapeHtml(f.label)}: custom" hidden />
+        <div class="bf-warn" data-warn-for="${f.id}" aria-live="polite"></div></div>`;
+    case 'textarea':
+      control = `<textarea id="${fid}" data-key="${f.id}"${ph}></textarea>`; break;
+    case 'number':
+      control = `<div class="suffix-wrap"><input type="text" id="${fid}" inputmode="decimal" autocomplete="off" data-key="${f.id}"${ph} />${f.suffix ? `<span class="suffix">${escapeHtml(f.suffix)}</span>` : ''}</div>`; break;
+    default:
+      control = `<input type="text" id="${fid}" data-key="${f.id}"${ph} />`;
+  }
+  return `<div class="bf" data-field="${f.id}">${forLabel}${hint}${control}</div>`;
+}
+
+function renderBmsPanel(){
+  el('bmsFields').innerHTML = BMS_SCHEMA.map(g=>
+    `<section class="bms-group"><h3>${escapeHtml(g.group)}</h3>${g.fields.map(bmsFieldHtml).join('')}</section>`
+  ).join('');
+  populateBmsInputs();
+  refreshBmsUI();
+}
+
+// Writes stored values into the inputs (on load only, so typing isn't disturbed)
+function populateBmsInputs(){
+  const root = el('bmsFields');
+  root.querySelectorAll('input[data-key], textarea[data-key]').forEach(inp=>{
+    if(inp.dataset.maskCustom) return;
+    inp.value = bmsData[inp.dataset.key] || '';
+  });
+  root.querySelectorAll('select[data-mask]').forEach(sel=>{
+    const key = sel.dataset.mask;
+    const v = bmsData[key] || '';
+    const custom = root.querySelector(`[data-mask-custom="${key}"]`);
+    if(!v){ sel.value = ''; custom.hidden = true; custom.value = ''; }
+    else if(SUBNET_PRESETS.some(([m])=> m === v)){ sel.value = v; custom.hidden = true; custom.value = ''; }
+    else { sel.value = 'custom'; custom.hidden = false; custom.value = v; }
+  });
+  root.querySelectorAll('[data-warn-for]').forEach(w=> updateBmsWarning(w.dataset.warnFor));
+}
+
+// Pressed states, conditional fields and the progress count
+function refreshBmsUI(){
+  const root = el('bmsFields');
+  root.querySelectorAll('.seg-btn').forEach(b=>{
+    b.setAttribute('aria-pressed', String(bmsData[b.dataset.key] === b.dataset.value));
+  });
+  root.querySelectorAll('.chip-btn').forEach(b=>{
+    const list = bmsData[b.dataset.multi];
+    b.setAttribute('aria-pressed', String(Array.isArray(list) && list.includes(b.dataset.value)));
+  });
+  BMS_FIELDS.forEach(f=>{
+    const wrap = root.querySelector(`[data-field="${f.id}"]`);
+    if(wrap) wrap.hidden = !bmsVisible(f);
+  });
+  const counted = BMS_FIELDS.filter(f=> !f.uncounted && bmsVisible(f));
+  const done = counted.filter(bmsAnswered).length;
+  const prog = el('bmsProgress');
+  prog.textContent = done === counted.length ? `All ${counted.length} answered` : `${done} of ${counted.length} answered`;
+  prog.classList.toggle('done', done === counted.length);
+}
+
+function updateBmsWarning(fieldId){
+  const f = BMS_FIELDS.find(x=> x.id === fieldId);
+  const warn = el('bmsFields').querySelector(`[data-warn-for="${fieldId}"]`);
+  if(!f || !warn) return;
+  const msgs = [];
+  if(f.type === 'iprange'){
+    [['From', bmsData[f.id+'From']], ['To', bmsData[f.id+'To']]].forEach(([which, v])=>{
+      if(v && String(v).trim() && !isValidIp(v)) msgs.push(`"${which}" doesn't look like an IPv4 address (four numbers 0–255, e.g. 192.168.1.10).`);
+    });
+  } else if(f.type === 'mask'){
+    const v = bmsData[f.id];
+    if(v && !isValidMask(v)) msgs.push(`Check this mask: use a form like 255.255.255.224 or /27.`);
+  }
+  warn.textContent = msgs.join(' ');
+}
+
+function setBmsValue(key, value){
+  bmsData[key] = value;
+  refreshBmsUI();
+  scheduleBmsSave();
+  updateExportState();
+}
+
+el('bmsFields').addEventListener('click', (e)=>{
+  const seg = e.target.closest('.seg-btn');
+  if(seg){
+    const key = seg.dataset.key;
+    // Tapping the selected answer again clears it
+    setBmsValue(key, bmsData[key] === seg.dataset.value ? '' : seg.dataset.value);
+    return;
+  }
+  const chip = e.target.closest('.chip-btn');
+  if(chip){
+    const key = chip.dataset.multi;
+    const list = Array.isArray(bmsData[key]) ? [...bmsData[key]] : [];
+    const i = list.indexOf(chip.dataset.value);
+    if(i >= 0) list.splice(i, 1); else list.push(chip.dataset.value);
+    setBmsValue(key, list);
+  }
+});
+
+el('bmsFields').addEventListener('input', (e)=>{
+  const t = e.target;
+  if(t.matches('select[data-mask]')) return; // handled on change
+  if(!t.dataset.key) return;
+  setBmsValue(t.dataset.key, t.value);
+  const warnFor = t.dataset.ip || t.dataset.maskCustom;
+  // Only re-check while typing if a warning is already showing; full check on blur
+  if(warnFor){
+    const w = el('bmsFields').querySelector(`[data-warn-for="${warnFor}"]`);
+    if(w && w.textContent) updateBmsWarning(warnFor);
+  }
+});
+
+el('bmsFields').addEventListener('change', (e)=>{
+  const t = e.target;
+  if(t.matches('select[data-mask]')){
+    const key = t.dataset.mask;
+    const custom = el('bmsFields').querySelector(`[data-mask-custom="${key}"]`);
+    if(t.value === 'custom'){
+      custom.hidden = false;
+      setBmsValue(key, custom.value.trim());
+      custom.focus();
+    } else {
+      custom.hidden = true;
+      custom.value = '';
+      setBmsValue(key, t.value);
+    }
+    updateBmsWarning(key);
+  }
+});
+
+el('bmsFields').addEventListener('focusout', (e)=>{
+  const warnFor = e.target.dataset && (e.target.dataset.ip || e.target.dataset.maskCustom);
+  if(warnFor) updateBmsWarning(warnFor);
+});
+
+async function loadBmsForCurrentAudit(){
+  bmsData = {};
+  try{
+    const res = await idbStorage.get(bmsKey(), false);
+    if(res) bmsData = JSON.parse(res.value) || {};
+  }catch(e){ bmsData = {}; }
+  renderBmsPanel();
+}
+
+let bmsSaveTimer = null;
+function scheduleBmsSave(){
+  el('bmsSaved').textContent = 'Saving...';
+  clearTimeout(bmsSaveTimer);
+  bmsSaveTimer = setTimeout(saveBmsInfo, 600);
+}
+
+async function saveBmsInfo(){
+  bmsSaveTimer = null;
+  if(!currentAuditId) return;
+  try{
+    const value = JSON.stringify(bmsData);
+    await idbStorage.set(bmsKey(), value, false);
+    mirrorToCloudBestEffort(bmsKey(), value);
+    el('bmsSaved').textContent = 'Saved';
+    setTimeout(()=>{ el('bmsSaved').textContent = 'Auto-saves as you type'; }, 1500);
+  }catch(e){
+    el('bmsSaved').textContent = 'Could not save (device storage issue)';
+  }
+  await touchCatalogueEntry();
+}
+
+// Before switching surveys, write any pending edits to the survey they belong to
+async function flushPendingSaves(){
+  if(biSaveTimer){ clearTimeout(biSaveTimer); biSaveTimer = null; await saveBuildingInfo(); }
+  if(bmsSaveTimer){ clearTimeout(bmsSaveTimer); bmsSaveTimer = null; await saveBmsInfo(); }
+  if(oiSaveTimer){ clearTimeout(oiSaveTimer); oiSaveTimer = null; await saveOpenItems(); }
+}
+
+function applySurveyType(){
+  const type = currentSurveyType();
+  el('bmsPanel').hidden = type !== 'ibos';
+  el('ibosUseRow').hidden = type !== 'ibos';
+  const btn = el('surveyTypeBtn');
+  btn.className = 'type-pill' + (type === 'ibos' ? ' ibos' : '');
+  btn.innerHTML = `${SURVEY_TYPE_LABEL[type]}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  btn.setAttribute('aria-label', `Survey type: ${SURVEY_TYPE_LABEL[type]}. Tap to change.`);
+  btn.setAttribute('aria-haspopup', 'dialog');
+  btn.title = 'Change survey type';
+  updateExportState();
+}
+
+// Survey type picker: an in-app dialog (browser confirm() popups are blocked in some
+// embedded viewers). Changing type never deletes anything: BMS answers and IBOS photo
+// choices stay saved and are only hidden while the survey is an Energy Audit.
+let typePickerChoice = 'energy';
+
+function renderTypePicker(){
+  const current = currentSurveyType();
+  document.querySelectorAll('.type-option').forEach(b=>{
+    b.setAttribute('aria-checked', String(b.dataset.type === typePickerChoice));
+    b.querySelector('.to-tag').textContent = b.dataset.type === current ? 'Current' : '';
+  });
+  const answers = BMS_FIELDS.filter(bmsAnswered).length;
+  const routed = entries.filter(e=> e.photos && e.photos.length && typeof e.ibosUse === 'string' && e.ibosUse).length;
+  const btn = el('typeConfirmBtn');
+  let note = '';
+  if(typePickerChoice === current){
+    btn.disabled = true;
+    btn.textContent = 'No change';
+    btn.classList.remove('ibos');
+  } else if(typePickerChoice === 'ibos'){
+    btn.disabled = false;
+    btn.textContent = 'Switch to IBOS survey';
+    btn.classList.add('ibos');
+    note = `<strong>Nothing already logged changes.</strong> The BMS Networking section appears below the log entry form, and the export adds the IBOS Site Survey.`
+      + (answers ? ` Your ${answers} earlier BMS answer${answers === 1 ? '' : 's'} will reappear.` : '');
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Switch to Energy Audit';
+    btn.classList.remove('ibos');
+    const kept = [];
+    if(answers) kept.push(`${answers} BMS answer${answers === 1 ? '' : 's'}`);
+    if(routed) kept.push(`IBOS photo choices on ${routed} entr${routed === 1 ? 'y' : 'ies'}`);
+    note = `<strong>Nothing is deleted.</strong> The BMS Networking section is hidden and left out of exports while this is an Energy Audit.`
+      + (kept.length ? ` Your ${kept.join(' and ')} stay saved and come back if you switch to IBOS survey again.` : ' Anything you enter later as an IBOS survey is kept the same way.');
+  }
+  el('typeNote').innerHTML = note;
+}
+
+function openTypePicker(){
+  if(!catalogue.find(a=> a.id === currentAuditId)) return;
+  typePickerChoice = currentSurveyType();
+  renderTypePicker();
+  el('typeOverlay').classList.add('open');
+  const sel = document.querySelector(`.type-option[data-type="${typePickerChoice}"]`);
+  if(sel) sel.focus();
+}
+function closeTypePicker(){
+  el('typeOverlay').classList.remove('open');
+  el('surveyTypeBtn').focus();
+}
+
+el('surveyTypeBtn').addEventListener('click', openTypePicker);
+el('closeTypeBtn').addEventListener('click', closeTypePicker);
+el('typeCancelBtn').addEventListener('click', closeTypePicker);
+el('typeOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'typeOverlay') closeTypePicker(); });
+document.addEventListener('keydown', (e)=>{
+  if(!el('typeOverlay').classList.contains('open')) return;
+  if(e.key === 'Escape') closeTypePicker();
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+    if(!e.target.classList || !e.target.classList.contains('type-option')) return;
+    e.preventDefault();
+    typePickerChoice = typePickerChoice === 'energy' ? 'ibos' : 'energy';
+    renderTypePicker();
+    document.querySelector(`.type-option[data-type="${typePickerChoice}"]`).focus();
+  }
+});
+document.querySelectorAll('.type-option').forEach(b=> b.addEventListener('click', ()=>{
+  typePickerChoice = b.dataset.type;
+  renderTypePicker();
+}));
+
+el('typeConfirmBtn').addEventListener('click', async ()=>{
+  const item = catalogue.find(a=> a.id === currentAuditId);
+  if(!item || typePickerChoice === currentSurveyType()) return;
+  const toIbos = typePickerChoice === 'ibos';
+  item.type = typePickerChoice;
+  item.updatedAt = new Date().toISOString();
+  await saveCatalogue();
+  el('typeOverlay').classList.remove('open');
+  applySurveyType();
+  renderActiveAuditBar();
+  renderEntries();
+  if(toIbos){
+    el('bmsPanel').open = true;
+    el('bmsPanel').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start' });
+  } else {
+    el('surveyTypeBtn').focus();
+  }
+});
+
+// --- Export model: shared by notes.md/.docx/.pdf and the standalone IBOS PDF ---
+const IBOS_CHECKLIST = [
+  ['Access to location where the BMS PC is', d=> d.accessPcLocation],
+  ['Access to BMS application login details', d=> d.appLogin],
+  ['Access to BMS PC login details', d=> d.pcLogin],
+  ['IP addresses of the BMS network and subnet mask', d=> (d.bmsRangeFrom || d.bmsRangeTo || d.bmsSubnet) ? 'Recorded' : ''],
+  ['Internet-enabled network and subnet mask', d=> (d.inetRangeFrom || d.inetRangeTo || d.inetSubnet) ? 'Recorded' : ''],
+  ['Access point to power', d=> d.powerAccess],
+  ['Access point to Ethernet', d=> d.ethernetAccess],
+  ['Network managed / unmanaged', d=> d.managedNetwork],
+  ['Parking space', d=> d.parking]
+];
+const BMS_IN_CHECKLIST = new Set(['accessPcLocation','appLogin','pcLogin','powerAccess','ethernetAccess','managedNetwork','parking']);
+
+function bmsDisplayValue(f){
+  const d = bmsData;
+  switch(f.type){
+    case 'multi': {
+      const list = Array.isArray(d[f.id]) ? d[f.id] : [];
+      return list.map(v=> v === 'Other' && String(d.protocolOther||'').trim() ? `Other (${d.protocolOther.trim()})` : v).join(', ');
+    }
+    case 'iprange': {
+      const a = String(d[f.id+'From']||'').trim(), b = String(d[f.id+'To']||'').trim();
+      return a && b ? `${a} to ${b}` : (a || b);
+    }
+    case 'number': {
+      const v = String(d[f.id]||'').trim();
+      return v && f.suffix && /^[\d.,\s<>~-]+$/.test(v) ? `${v} ${f.suffix}` : v;
+    }
+    default: return String(d[f.id]||'').trim();
+  }
+}
+
+function bmsExportModel(){
+  if(currentSurveyType() !== 'ibos' || !bmsHasData()) return null;
+  const checklist = IBOS_CHECKLIST.map(([label, fn])=> [label, fn(bmsData) || '—']);
+  const groups = BMS_SCHEMA.map(g=>({
+    title: g.group,
+    rows: g.fields
+      .filter(f=> !BMS_IN_CHECKLIST.has(f.id) && !f.exportSkip && bmsVisible(f))
+      .map(f=> [f.label, bmsDisplayValue(f)])
+      .filter(([,v])=> v)
+  })).filter(g=> g.rows.length);
+  return { checklist, groups };
+}
+
+// Questions already end in '?', so they don't need a colon as well
+function bmsLabel(label){ return /\?$/.test(label) ? label : label + ':'; }
+
+function bmsToMarkdown(model){
+  let md = `## BMS Networking Information\n\n### IBOS checklist\n\n| Item | Status |\n|---|---|\n`;
+  model.checklist.forEach(([a,b])=>{ md += `| ${a.replace(/\|/g,'\\|')} | ${b.replace(/\|/g,'\\|')} |\n`; });
+  md += `\n`;
+  model.groups.forEach(g=>{
+    md += `### ${g.title}\n\n`;
+    g.rows.forEach(([label, value])=>{ md += `**${bmsLabel(label)}** ${value}\n\n`; });
+  });
+  return md;
+}
+
+function docxTable(rows, header){
+  const W1 = 6526, W2 = 2500;
+  const border = ['top','left','bottom','right','insideH','insideV']
+    .map(b=> `<w:${b} w:val="single" w:sz="4" w:space="0" w:color="9AA3AF"/>`).join('');
+  const cell = (text, w, opts={})=> `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${opts.shade ? '<w:shd w:val="clear" w:color="auto" w:fill="E7E9EE"/>' : ''}</w:tcPr>${docxParagraph([ docxRun(text, {size:SIZE_NORMAL, bold:!!opts.bold}) ])}</w:tc>`;
+  const all = header ? [header, ...rows] : rows;
+  const trs = all.map((r,i)=>{
+    const head = header && i === 0;
+    return `<w:tr>${head ? '<w:trPr><w:tblHeader/></w:trPr>' : ''}${cell(r[0], W1, {bold:head, shade:head})}${cell(r[1], W2, {bold:head, shade:head})}</w:tr>`;
+  }).join('');
+  return `<w:tbl><w:tblPr><w:tblW w:w="${W1+W2}" w:type="dxa"/><w:tblBorders>${border}</w:tblBorders><w:tblCellMar><w:top w:w="40" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="40" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid><w:gridCol w:w="${W1}"/><w:gridCol w:w="${W2}"/></w:tblGrid>${trs}</w:tbl>`;
+}
+
+function bmsToDocx(model, paragraphs){
+  paragraphs.push(docxParagraph([ docxRun('BMS Networking Information', {bold:true, size:SIZE_HEADER}) ]));
+  paragraphs.push(docxParagraph([ docxRun('IBOS checklist', {bold:true, size:SIZE_CATEGORY}) ]));
+  paragraphs.push(docxTable(model.checklist, ['Item', 'Status']));
+  paragraphs.push(docxParagraph([]));
+  model.groups.forEach(g=>{
+    paragraphs.push(docxParagraph([ docxRun(g.title, {bold:true, size:SIZE_CATEGORY}) ]));
+    g.rows.forEach(([label, value])=>{
+      paragraphs.push(docxParagraph([ docxRun(`${bmsLabel(label)} `, {bold:true, size:SIZE_NORMAL}), docxRun(value, {size:SIZE_NORMAL}) ]));
+    });
+    paragraphs.push(docxParagraph([]));
+  });
+}
+
+// Small text-flow helper around jsPDF: wrapped text, page breaks, and a 2-column table
+function makePdfWriter(pdf){
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 48;
+  const maxWidth = pageWidth - margin * 2;
+  let y = margin;
+  function ensure(h){
+    if(y + h > pageHeight - margin){ pdf.addPage(); y = margin; }
+  }
+  function text(t, opts={}){
+    const { bold=false, size=SIZE_NORMAL, gapAfter=4 } = opts;
+    pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+    pdf.setFontSize(size);
+    const lineHeight = size * 1.35;
+    pdf.splitTextToSize(String(t), maxWidth).forEach(line=>{
+      ensure(lineHeight);
+      pdf.text(line, margin, y);
+      y += lineHeight;
+    });
+    y += gapAfter;
+  }
+  function gap(n){ y += n; }
+  function table(rows, header, gapAfter=10){
+    const size = SIZE_NORMAL, lh = size * 1.3, pad = 5;
+    const col2 = 140, col1 = maxWidth - col2;
+    // jsPDF's text() puts the baseline at y; start rows just below the previous text line
+    y -= size * 0.6;
+    const all = header ? [header, ...rows] : rows;
+    all.forEach((r, i)=>{
+      const head = !!header && i === 0;
+      pdf.setFont('helvetica', head ? 'bold' : 'normal');
+      pdf.setFontSize(size);
+      const a = pdf.splitTextToSize(String(r[0]), col1 - pad*2);
+      const b = pdf.splitTextToSize(String(r[1]), col2 - pad*2);
+      const n = Math.max(a.length, b.length);
+      const h = (n - 1) * lh + size + pad * 2;
+      ensure(h);
+      if(head){ pdf.setFillColor(231, 233, 238); pdf.rect(margin, y, maxWidth, h, 'F'); }
+      pdf.setDrawColor(154, 163, 175); pdf.setLineWidth(0.6);
+      pdf.rect(margin, y, maxWidth, h);
+      pdf.line(margin + col1, y, margin + col1, y + h);
+      const base = y + pad + size * 0.8;
+      a.forEach((ln, k)=> pdf.text(ln, margin + pad, base + k * lh));
+      b.forEach((ln, k)=> pdf.text(ln, margin + col1 + pad, base + k * lh));
+      y += h;
+    });
+    y += gapAfter + size;
+  }
+  return { text, gap, table };
+}
+
+function bmsToPdf(model, W){
+  W.text('BMS Networking Information', { bold:true, size:SIZE_HEADER, gapAfter:4 });
+  W.text('IBOS checklist', { bold:true, size:SIZE_CATEGORY, gapAfter:4 });
+  W.table(model.checklist, ['Item', 'Status']);
+  model.groups.forEach(g=>{
+    W.text(g.title, { bold:true, size:SIZE_CATEGORY, gapAfter:4 });
+    g.rows.forEach(([label, value])=> W.text(`${bmsLabel(label)} ${value}`, { size:SIZE_NORMAL, gapAfter:2 }));
+    W.gap(8);
+  });
+}
+
+el('newIbosBtn').addEventListener('click', ()=> createNewAudit(true, 'ibos'));
+
 // ---------- Manual "Save progress" button ----------
 // This is a deliberate, on-demand save the user can trigger any time they
 // want the reassurance that everything is written to disk right now —
@@ -30554,9 +31453,11 @@ el('manualSaveBtn').addEventListener('click', async ()=>{
 
   clearTimeout(biSaveTimer);
   clearTimeout(draftSaveTimer);
+  clearTimeout(bmsSaveTimer);
 
   try{
     await saveBuildingInfo();
+    if(currentSurveyType() === 'ibos') await saveBmsInfo();
     await saveDraft();
     btn.textContent = 'Saved ✓';
     btn.classList.add('is-saved');
@@ -30619,9 +31520,9 @@ async function setActiveAuditId(id){
   try{ await idbStorage.set('active-audit-id', id, false); }catch(e){}
 }
 
-async function createNewAudit(open){
+async function createNewAudit(open, type){
   const id = newAuditId();
-  const item = { id, name: 'Untitled survey', address: '', entryCount: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  const item = { id, type: type === 'ibos' ? 'ibos' : 'energy', name: 'Untitled survey', address: '', entryCount: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
   catalogue.unshift(item);
   await saveCatalogue();
   if(open !== false){
@@ -30631,8 +31532,11 @@ async function createNewAudit(open){
 }
 
 async function openAudit(id){
+  await flushPendingSaves();
   await setActiveAuditId(id);
   await loadBuildingInfoForCurrentAudit();
+  await loadBmsForCurrentAudit();
+  applySurveyType();
   await loadEntriesForCurrentAudit();
   await loadOpenItemsForCurrentAudit();
   renderOpenItems();
@@ -30656,6 +31560,7 @@ async function deleteAudit(id){
       }
     }
     await idbStorage.delete(`audit:${id}:info`, false);
+    await idbStorage.delete(`audit:${id}:bms`, false);
     await idbStorage.delete(`audit:${id}:openitems`, false);
   }catch(e){}
   catalogue = catalogue.filter(a=>a.id !== id);
@@ -30685,6 +31590,7 @@ function renderActiveAuditBar(){
   el('activeAuditName').textContent = displayName(item && item.name);
   const count = entries.length;
   el('activeAuditSub').textContent = `${count} ${count === 1 ? 'entry' : 'entries'} · auto-saved`;
+  if(currentAuditId) applySurveyType();
 }
 
 function renderCatalogueList(){
@@ -30701,7 +31607,7 @@ function renderCatalogueList(){
       <div class="catalogue-item ${isActive ? 'active' : ''}">
         <div class="ci-info">
           <div class="ci-name">${escapeHtml(displayName(item.name))}${isActive ? ' (current)' : ''}</div>
-          <div class="ci-sub">${escapeHtml(item.address || 'No address')} · ${item.entryCount || 0} entries · ${dateLabel}</div>
+          <div class="ci-sub"><span class="ci-type ${surveyTypeOf(item)}">${SURVEY_TYPE_LABEL[surveyTypeOf(item)]}</span> · ${escapeHtml(item.address || 'No address')} · ${item.entryCount || 0} entries · ${dateLabel}</div>
         </div>
         <div class="ci-actions">
           ${isActive ? '' : `<button class="ci-open" data-id="${item.id}">Open</button>`}
@@ -30729,7 +31635,7 @@ function closeCatalogueModal(){
 el('openCatalogueBtn').addEventListener('click', openCatalogueModal);
 el('closeCatalogueBtn').addEventListener('click', closeCatalogueModal);
 el('catalogueOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'catalogueOverlay') closeCatalogueModal(); });
-el('newAuditBtn').addEventListener('click', ()=> createNewAudit());
+el('newAuditBtn').addEventListener('click', ()=> createNewAudit(true, 'energy'));
 
 // One-time migration: fold any pre-existing flat 'building-info' / 'entry:*' keys
 // (from before multi-audit support) into a new audit, so nothing is lost.
@@ -30797,7 +31703,7 @@ async function initApp(){
   }
 }
 
-const CATEGORY_ORDER = ['Heating','Cooling','Ventilation','DHW','DCW','Controls','Electrical','Lighting','Metering','Fabric','Other','Issues'];
+const CATEGORY_ORDER = ['HVAC','Water','Controls','Electrical','Lighting','Metering','Fabric','Other','Issues'];
 const collapsedGroups = new Set();
 
 function catColor(tag){
@@ -30870,6 +31776,7 @@ function renderEntries(){
               ${entry.entryNo ? `<span class="entry-no">No. ${escapeHtml(entry.entryNo)}</span>` : ''}
             </div>
             ${subLocation ? `<div class="entry-location">${escapeHtml(subLocation)}</div>` : ''}
+            ${subtypeChipText(entry) ? `<span class="entry-subtype" style="--st:var(--${subtypeTone(entry.tag, entry.subtype)})">${escapeHtml(subtypeChipText(entry))}</span>` : ''}
           </div>
           <span class="entry-id">${timeLabel}</span>
         </div>
@@ -30878,6 +31785,7 @@ function renderEntries(){
         ${entry.note ? `<div class="entry-note">${escapeHtml(entry.note)}</div>` : ''}
         ${entry.photos.length ? `<div class="entry-photos">${entry.photos.map(p=>`<img src="${p}"/>`).join('')}</div>` : ''}
         ${linkedItem ? `<button type="button" class="entry-oi" data-oi="${linkedItem.id}" data-status="${linkedItem.status}">Open item · ${OI_STATUS_LABEL[linkedItem.status]}</button>` : ''}
+        ${currentSurveyType() === 'ibos' && entry.photos.length && ibosUseOf(entry) ? `<div class="entry-ibos">IBOS form: ${escapeHtml(IBOS_USE_LABEL[ibosUseOf(entry)])}</div>` : ''}
         <div class="entry-actions">
           <button class="entry-edit" data-id="${entry.id}">Edit</button>
           <button class="entry-delete" data-id="${entry.id}">Delete</button>
@@ -30969,7 +31877,8 @@ function escapeHtml(str){
 }
 
 function updateExportState(){
-  el('exportBtn').disabled = entries.length === 0 && openItems.items.length === 0;
+  const hasBms = currentAuditId && currentSurveyType() === 'ibos' && bmsHasData();
+  el('exportBtn').disabled = entries.length === 0 && openItems.items.length === 0 && !hasBms;
 }
 
 async function refreshStorageStats(){
@@ -31080,6 +31989,517 @@ async function addDocxToZip(zip, filename, paragraphs){
   zip.file(filename, docxData);
 }
 
+
+/* =========================================================================
+   IBOS ONBOARDING FORM EXPORT
+   -------------------------------------------------------------------------
+   For IBOS surveys the export zip also contains the IBOS Site Survey document
+   as Word and PDF, laid out like IBOS's own form (numbered sections, field
+   labels in the same wording and order, BMS graphics and site visuals
+   embedded as captioned photos). One model feeds both formats.
+   Photos are routed into the form with each entry's "Photos in the IBOS
+   form" choice; older Controls entries count as BMS graphics.
+   ========================================================================= */
+const IBOS_DOC_TITLE = 'IBOS Site Survey';
+const IBOS_FORM_CLASSIFICATION = 'Workman ISO 27001 Classification: Privileged';
+const IBOS_USE_LABEL = {
+  graphic:'BMS graphic', ethernet:'Ethernet access point', power:'Power access point',
+  rack:'6U rack location', attention:'Needs attention', visual:'Building visual'
+};
+function ibosUseOf(entry){
+  if(entry && typeof entry.ibosUse === 'string') return entry.ibosUse;
+  return entry && entry.tag === 'Controls' ? 'graphic' : '';
+}
+
+// Colour coding for answers: green = in place, red = blocker, amber = to follow up, grey = gap
+const FORM_TONE = { good:'2E7D32', bad:'C62828', warn:'B26A00', muted:'7F8C8D' };
+const FORM_TEAL = '0F4761';
+const FORM_INK = '333333';
+function formTone(value, status){
+  if(!value) return 'muted';
+  if(['TBC','Unknown','Unsure','Tech Partner to do'].includes(value)) return 'warn';
+  if(!status) return null;
+  if(value === 'Yes') return 'good';
+  if(value === 'No') return 'bad';
+  if(value === 'N/A') return 'muted';
+  return null;
+}
+
+function loadImageSize(dataUrl){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=> resolve({ w: img.naturalWidth || 900, h: img.naturalHeight || 675 });
+    img.onerror = ()=> resolve({ w: 900, h: 675 });
+    img.src = dataUrl;
+  });
+}
+
+async function collectFormPhotos(list, slot){
+  const out = [];
+  for(const e of list){
+    if(ibosUseOf(e) !== slot || !Array.isArray(e.photos)) continue;
+    const title = [e.asset, e.location].filter(Boolean).join(', ');
+    for(let i = 0; i < e.photos.length; i++){
+      const size = await loadImageSize(e.photos[i]);
+      out.push({ entryId: e.id, dataUrl: e.photos[i], w: size.w, h: size.h, title, note: i === e.photos.length - 1 ? (e.note || '') : '' });
+    }
+  }
+  return out;
+}
+
+async function buildIbosFormModel(project, bi, allEntries){
+  const fv = id=>{ const f = BMS_FIELDS.find(x=> x.id === id); return f ? bmsDisplayValue(f) : ''; };
+  const shown = id=> bmsVisible(BMS_FIELDS.find(x=> x.id === id));
+  const row = (label, value, status=false)=>{
+    const v = String(value || '').trim();
+    return { label, value: v || 'Not recorded', tone: formTone(v, status), empty: !v };
+  };
+  const chrono = [...allEntries].sort((a,b)=> a.id.localeCompare(b.id));
+
+  const graphics = await collectFormPhotos(chrono, 'graphic');
+  const ethernet = await collectFormPhotos(chrono, 'ethernet');
+  const power = await collectFormPhotos(chrono, 'power');
+  const rack = await collectFormPhotos(chrono, 'rack');
+  const attention = await collectFormPhotos(chrono, 'attention');
+  const visuals = await collectFormPhotos(chrono, 'visual');
+
+  const sections = [];
+  sections.push({ title:'Building Information', rows:[
+    row('Building name', bi.biName),
+    row('Number / street / road', bi.biAddress),
+    row('Building classification', bi.biOccupancy),
+    row('Building total area', bi.biSize),
+    row('No. of levels', bi.biFloors),
+    row('Vacant floor(s)', bi.biVacantFloors),
+    row('Occupied hours', bi.biOccupiedHours),
+    row('Year built / age', bi.biYearBuilt)
+  ], photoGroups:[] });
+
+  const access = [
+    row('BMS PC login details', fv('pcLogin'), true),
+    row('BMS application login details', fv('appLogin'), true),
+    row('Login details held by', fv('loginHolder')),
+    row('Access to the location of the BMS PC', fv('accessPcLocation'), true),
+    row('Parking space', fv('parking'), true)
+  ];
+  sections.push({ title:'Site Access Information', rows: access,
+    note:'Usernames and passwords are not recorded in this form. Request them from the login holder.',
+    photoGroups:[{ heading:'BMS Graphics', prefix:'BMS Graphics', photos: graphics }] });
+
+  const conn = [ row('BMS PC in the building', fv('pcInBuilding'), true) ];
+  if(shown('noPcComment')) conn.push(row('If no BMS PC, comment', fv('noPcComment')));
+  conn.push(
+    row('Access point to power', fv('powerAccess'), true),
+    row('Access point to BMS via Ethernet', fv('ethernetAccess'), true),
+    row('Does site have managed IT network', fv('managedNetwork'), true)
+  );
+  if(shown('itContractor')) conn.push(row('IT / network contractor', fv('itContractor')));
+  conn.push(
+    row('BMS protocol / format', fv('protocols')),
+    row('4G router to provide internet to device required?', fv('router4g')),
+    row('Number of networks connected to Site Supervisor PC', fv('networksCount')),
+    row('Network type (Wi-Fi, hardwired)', fv('networkType')),
+    row('Range of BMS network', fv('bmsRange')),
+    row('BMS network subnet mask', fv('bmsSubnet')),
+    row('Range of internet-enabled network', fv('inetRange')),
+    row('Internet-enabled network subnet mask', fv('inetSubnet')),
+    row('Distance from main switch / Wi-Fi router to PC / network', fv('switchDistance')),
+    row('Sufficient space for 6U rack', fv('rackSpace'), true),
+    row('Potential location of 6U rack', fv('rackLocation'))
+  );
+  sections.push({ title:'Connectivity', rows: conn, photoGroups:[
+    { heading:'Visual for Access Point to Ethernet', photos: ethernet },
+    { heading:'Visual for Access Point to Power', photos: power },
+    { heading:'Visual for 6U Rack', photos: rack },
+    { heading:'Other Visual that Needs Attention', photos: attention }
+  ]});
+
+  const visualsGroup = { heading:'', prefix:'Building Visuals', photos: visuals };
+
+  // ---- M&E summary, drawn from every logged entry ----
+  // Where an entry's photo appears elsewhere in this document, point to it
+  const photoRefs = {};
+  const addRefs = (group, labelFn)=> group.photos.forEach((ph, k)=>{ (photoRefs[ph.entryId] = photoRefs[ph.entryId] || []).push(labelFn(k)); });
+  addRefs(visualsGroup, k=> `Building Visuals ${k + 1}`);
+  sections.find(sec=> sec.title === 'Site Access Information').photoGroups.forEach(g=> addRefs(g, k=> `BMS Graphics ${k + 1}`));
+  sections.find(sec=> sec.title === 'Connectivity').photoGroups.forEach(g=> addRefs(g, ()=> g.heading));
+  // [key, title, matcher]; titles follow the IBOS form's plant headings where there is one
+  const byTag = t=> e=> e.tag === t;
+  const ME_SYSTEMS = [
+    ['Heating','Heating', e=> e.tag === 'HVAC' && e.subtype === 'Heating'],
+    ['Cooling','Cooling', e=> e.tag === 'HVAC' && e.subtype === 'Cooling'],
+    ['HeatCool','Heat Pumps / Heating & Cooling', e=> e.tag === 'HVAC' && e.subtype === 'HeatCool'],
+    ['Ventilation','Ventilation', e=> e.tag === 'HVAC' && e.subtype === 'Ventilation'],
+    ['HVACOther','HVAC (type not set)', e=> e.tag === 'HVAC' && !HVAC_GROUP[e.subtype]],
+    ['DHW','Hot Water Service (DHW)', e=> e.tag === 'Water' && e.subtype === 'DHW'],
+    ['DCW','Domestic Cold Water (DCW)', e=> e.tag === 'Water' && e.subtype === 'DCW'],
+    ['WaterOther','Water (type not set)', e=> e.tag === 'Water' && e.subtype !== 'DHW' && e.subtype !== 'DCW'],
+    ['Controls','BMS and Controls', byTag('Controls')], ['Electrical','Electrical', byTag('Electrical')],
+    ['Lighting','Lighting', byTag('Lighting')], ['Metering','Metering', byTag('Metering')], ['Fabric','Building Fabric', byTag('Fabric')],
+    ['Other','Other Plant', byTag('Other')], ['Issues','Issues Found', byTag('Issues')], ['Questions','Open Questions', byTag('Questions')]
+  ];
+  const meSystems = [];
+  const notLogged = [];
+  ME_SYSTEMS.forEach(([tag, title, match])=>{
+    const tagged = chrono.filter(match);
+    if(!tagged.length){ if(!['Issues','Questions','Other','WaterOther','HVACOther','HeatCool'].includes(tag)) notLogged.push(title); return; }
+    const rows = tagged.map(e=>{
+      const details = [];
+      if(e.tag === 'Metering'){
+        const bits = [];
+        if(e.meterType) bits.push(`Type: ${e.meterType}`);
+        if(e.meterNumber) bits.push(`Meter no. ${e.meterNumber}`);
+        if(e.amrInstalled) bits.push(`AMR: ${e.amrInstalled}`);
+        if(bits.length) details.push(bits.join(', '));
+      }
+      const scope = scopeLabel(e.tag, e.scope);
+      if(scope) details.push(scope);
+      if(e.note) details.push(e.note);
+      const refs = [...new Set(photoRefs[e.id] || [])];
+      if(refs.length) details.push(`Photo: ${refs.join('; ')}`);
+      return {
+        asset: e.asset || e.location || 'Untitled entry',
+        location: e.asset ? (e.location || '') : '',
+        details: details.join('\n')
+      };
+    });
+    meSystems.push({ title, count: tagged.length, rows });
+  });
+  if(meSystems.length){
+    sections.push({ title:'M&E Summary', rows:[], photoGroups:[], me:{ systems: meSystems, notLogged } });
+  }
+
+  if(visuals.length) sections.push({ title:'Building Visuals', rows:[], photoGroups:[visualsGroup] });
+
+  const notes = String(bmsData.notes || '').trim();
+  if(notes) sections.push({ title:'Anything Building Operation Related', rows:[], text: notes, photoGroups:[] });
+
+  sections.forEach(sec=> sec.photoGroups = sec.photoGroups.filter(g=> g.photos.length));
+
+  // Page-one summary: IBOS checklist, then everything that still needs chasing
+  const glance = IBOS_CHECKLIST.map(([label, fn])=>{
+    const v = fn(bmsData) || '';
+    return { label, value: v || 'Not recorded', tone: v === 'Recorded' ? 'good' : formTone(v, true), empty: !v };
+  });
+  const outstanding = [...access, ...conn].filter(r=> r.empty || r.tone === 'warn' || r.tone === 'bad');
+
+  const firstTime = chrono.reduce((m,e)=>{ const t = new Date(e.time).getTime(); return isNaN(t) ? m : Math.min(m,t); }, Infinity);
+  const fmt = d=> d.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+  return {
+    project,
+    surveyDate: isFinite(firstTime) ? fmt(new Date(firstTime)) : '',
+    preparedDate: fmt(new Date()),
+    glance, outstanding, sections,
+    photoCount: sections.reduce((n,s)=> n + s.photoGroups.reduce((m,g)=> m + g.photos.length, 0), 0)
+  };
+}
+
+function formPhotoCaption(group, photo, n){
+  if(group.prefix) return `${group.prefix} ${n}` + (photo.title ? ` – ${photo.title}` : '');
+  return photo.title;
+}
+
+// ---------- Word (.docx) ----------
+const W_NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+const FORM_CONTENT_W = 9026; // A4 minus 1" margins, in twips
+
+function fr(text, o={}){
+  let rPr = `<w:rFonts w:ascii="${DOC_FONT}" w:hAnsi="${DOC_FONT}" w:cs="${DOC_FONT}"/>`;
+  if(o.bold) rPr += '<w:b/><w:bCs/>';
+  if(o.italic) rPr += '<w:i/><w:iCs/>';
+  if(o.color) rPr += `<w:color w:val="${o.color}"/>`;
+  const sz = Math.round((o.size || 10.5) * 2);
+  rPr += `<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/>`;
+  const t = String(text).split('\n').map(l=> `<w:t xml:space="preserve">${escapeXml(l)}</w:t>`).join('<w:br/>');
+  return `<w:r><w:rPr>${rPr}</w:rPr>${t}</w:r>`;
+}
+function fp(runs, o={}){
+  let pPr = '';
+  if(o.keepNext) pPr += '<w:keepNext/>';
+  if(o.pageBreakBefore) pPr += '<w:pageBreakBefore/>';
+  if(o.rule) pPr += `<w:pBdr><w:bottom w:val="single" w:sz="8" w:space="4" w:color="${FORM_TEAL}"/></w:pBdr>`;
+  if(o.tabRight) pPr += `<w:tabs><w:tab w:val="right" w:pos="${FORM_CONTENT_W}"/></w:tabs>`;
+  pPr += `<w:spacing w:before="${o.before || 0}" w:after="${o.after == null ? 80 : o.after}"/>`;
+  if(o.align) pPr += `<w:jc w:val="${o.align}"/>`;
+  return `<w:p><w:pPr>${pPr}</w:pPr>${(Array.isArray(runs) ? runs : [runs]).join('')}</w:p>`;
+}
+function fTable(rows, opts={}){
+  const w1 = opts.labelW || 3900, w2 = FORM_CONTENT_W - w1;
+  const line = 'w:val="single" w:sz="4" w:space="0" w:color="D5DCE3"';
+  const borders = `<w:top ${line}/><w:left w:val="nil"/><w:bottom ${line}/><w:right w:val="nil"/><w:insideH ${line}/><w:insideV w:val="nil"/>`;
+  const cell = (inner, w, shade)=> `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>` : ''}</w:tcPr>${inner}</w:tc>`;
+  let trs = '';
+  if(opts.header){
+    trs += `<w:tr><w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>${cell(fp(fr(opts.header[0], {bold:true, size:9.5, color:FORM_TEAL}), {after:0}), w1, 'EAF0F5')}${cell(fp(fr(opts.header[1], {bold:true, size:9.5, color:FORM_TEAL}), {after:0}), w2, 'EAF0F5')}</w:tr>`;
+  }
+  rows.forEach(r=>{
+    const label = fp(fr(r.label, {bold:true, size:10, color:FORM_TEAL}), {after:0});
+    const value = fp(fr(r.value, { size:10, bold: !!r.tone && r.tone !== 'muted', italic: r.empty, color: r.tone ? FORM_TONE[r.tone] : FORM_INK }), {after:0});
+    trs += `<w:tr><w:trPr><w:cantSplit/></w:trPr>${cell(label, w1)}${cell(value, w2)}</w:tr>`;
+  });
+  return `<w:tbl><w:tblPr><w:tblW w:w="${FORM_CONTENT_W}" w:type="dxa"/><w:tblBorders>${borders}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="70" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:bottom w:w="70" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid><w:gridCol w:w="${w1}"/><w:gridCol w:w="${w2}"/></w:tblGrid>${trs}</w:tbl>`;
+}
+function fImage(rid, id, w, h){
+  // Fit inside 6.27" x 3.7" so two photos (with captions) share a page, like the IBOS form
+  const maxW = 6.27 * 914400, maxH = 3.7 * 914400;
+  const scale = Math.min(maxW / w, maxH / h);
+  const cx = Math.round(w * scale), cy = Math.round(h * scale);
+  return `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${id}" name="Picture ${id}"/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${id}" name="image${id}.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+}
+
+// Three-column grid for the M&E summary (asset, location, notes)
+function fGrid(headers, rows, widths){
+  const line = 'w:val="single" w:sz="4" w:space="0" w:color="D5DCE3"';
+  const borders = `<w:top ${line}/><w:left w:val="nil"/><w:bottom ${line}/><w:right w:val="nil"/><w:insideH ${line}/><w:insideV w:val="nil"/>`;
+  const cell = (inner, w, shade)=> `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>` : ''}</w:tcPr>${inner}</w:tc>`;
+  let trs = `<w:tr><w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>${headers.map((h,i)=> cell(fp(fr(h, {bold:true, size:9.5, color:FORM_TEAL}), {after:0}), widths[i], 'EAF0F5')).join('')}</w:tr>`;
+  rows.forEach(r=>{
+    trs += `<w:tr><w:trPr><w:cantSplit/></w:trPr>${r.map((c,i)=> cell(fp(fr(c.text || '', {size:9.5, bold:!!c.bold, color:c.color || FORM_INK}), {after:0}), widths[i])).join('')}</w:tr>`;
+  });
+  const total = widths.reduce((a,b)=> a + b, 0);
+  return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/><w:tblBorders>${borders}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(w=> `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${trs}</w:tbl>`;
+}
+
+async function buildIbosFormDocx(form){
+  const body = [];
+  const media = [];
+  const H = (text, o={})=> body.push(fp(fr(text, {bold:true, size:o.size || 15, color:FORM_TEAL}), { before:o.before == null ? 240 : o.before, after:120, keepNext:true, rule:o.rule !== false, pageBreakBefore:o.pageBreakBefore }));
+  const sub = text=> body.push(fp(fr(text, {bold:true, size:12.5, color:FORM_TEAL}), { before:200, after:100, keepNext:true }));
+
+  // Cover block
+  body.push(fp(fr(IBOS_DOC_TITLE, {bold:true, size:24, color:FORM_TEAL}), {after:40}));
+  body.push(fp(fr(form.project, {size:15, color:FORM_INK}), {after:60}));
+  const meta = [form.surveyDate ? `Survey date: ${form.surveyDate}` : '', `Prepared: ${form.preparedDate}`].filter(Boolean).join('     ');
+  body.push(fp(fr(meta, {size:9.5, color:FORM_TONE.muted}), {after:200}));
+
+  H('At a Glance', {before:120});
+  body.push(fTable(form.glance, {header:['IBOS checklist item', 'Status'], labelW:6000}));
+  if(form.outstanding.length){
+    sub('Outstanding Items');
+    body.push(fp(fr('Answers still to confirm or chase before onboarding.', {size:9.5, italic:true, color:FORM_TONE.muted}), {after:80}));
+    body.push(fTable(form.outstanding, {header:['Item', 'Current answer'], labelW:6000}));
+  }
+
+  form.sections.forEach((sec, i)=>{
+    H(`${i + 1}. ${sec.title}`, { pageBreakBefore: i === 0 });
+    if(sec.rows.length) body.push(fTable(sec.rows));
+    if(sec.note) body.push(fp(fr(sec.note, {size:9, italic:true, color:FORM_TONE.muted}), {before:60, after:60}));
+    if(sec.text) body.push(fp(fr(sec.text, {size:10.5, color:FORM_INK}), {after:120}));
+    if(sec.me){
+      body.push(fp(fr('Drawn from the entries logged during the survey, grouped by system.', {size:9.5, italic:true, color:FORM_TONE.muted}), {after:60}));
+      if(sec.me.notLogged.length) body.push(fp([fr('Nothing logged for: ', {size:9.5, bold:true, color:FORM_TONE.warn}), fr(sec.me.notLogged.join(', '), {size:9.5, color:FORM_TONE.warn})], {after:80}));
+      sec.me.systems.forEach(sys=>{
+        sub(`${sys.title} (${sys.count})`);
+        if(sys.note) body.push(fp(fr(sys.note, {size:9.5, italic:true, color:FORM_TONE.muted}), {after:60, keepNext: sys.rows.length > 0}));
+        if(sys.rows.length){
+          body.push(fGrid(['Asset / item', 'Location', 'Notes'],
+            sys.rows.map(r=> [{text:r.asset, bold:true, color:FORM_TEAL}, {text:r.location}, {text:r.details}]),
+            [2900, 2000, FORM_CONTENT_W - 4900]));
+        }
+      });
+    }
+    sec.photoGroups.forEach(g=>{
+      if(g.heading) sub(g.heading);
+      g.photos.forEach((ph, k)=>{
+        const n = media.length + 1;
+        const rid = `rIdImg${n}`;
+        media.push({ rid, file:`image${n}.jpeg`, data: ph.dataUrl.split(',')[1] });
+        const cap = formPhotoCaption(g, ph, k + 1);
+        if(cap) body.push(fp(fr(cap, {size:11.5, color:FORM_TEAL}), { before:120, after:60, keepNext:true }));
+        body.push(fp(fImage(rid, n, ph.w, ph.h), { after: ph.note ? 40 : 160, keepNext: !!ph.note }));
+        if(ph.note) body.push(fp(fr(ph.note, {size:9.5, color:FORM_INK}), {after:160}));
+      });
+    });
+  });
+
+  const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document ${W_NS}><w:body>${body.join('')}<w:sectPr><w:headerReference w:type="default" r:id="rIdHdr"/><w:footerReference w:type="default" r:id="rIdFtr"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1300" w:right="1440" w:bottom="1300" w:left="1440" w:header="560" w:footer="560" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+
+  const headerXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:hdr ${W_NS}>${fp(fr(IBOS_FORM_CLASSIFICATION, {size:8, color:FORM_TONE.muted}), {align:'right', after:0})}</w:hdr>`;
+  const pageField = instr=> `<w:fldSimple w:instr=" ${instr} "><w:r><w:rPr><w:rFonts w:ascii="${DOC_FONT}" w:hAnsi="${DOC_FONT}" w:cs="${DOC_FONT}"/><w:color w:val="${FORM_TONE.muted}"/><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t>1</w:t></w:r></w:fldSimple>`;
+  const footerXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:ftr ${W_NS}>${fp([fr(`${IBOS_DOC_TITLE} | ${form.project}`, {size:8, color:FORM_TONE.muted}), '<w:r><w:tab/></w:r>', fr('Page ', {size:8, color:FORM_TONE.muted}), pageField('PAGE'), fr(' of ', {size:8, color:FORM_TONE.muted}), pageField('NUMPAGES')], {tabRight:true, after:0})}</w:ftr>`;
+
+  const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${DOC_FONT}" w:hAnsi="${DOC_FONT}" w:cs="${DOC_FONT}"/><w:sz w:val="21"/><w:szCs w:val="21"/><w:lang w:val="en-GB"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="80" w:line="259" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`;
+
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>`;
+  const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`;
+  const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const docRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="${R}/styles" Target="styles.xml"/><Relationship Id="rIdHdr" Type="${R}/header" Target="header1.xml"/><Relationship Id="rIdFtr" Type="${R}/footer" Target="footer1.xml"/>${media.map(m=> `<Relationship Id="${m.rid}" Type="${R}/image" Target="media/${m.file}"/>`).join('')}</Relationships>`;
+
+  const z = new JSZip();
+  z.file('[Content_Types].xml', contentTypes);
+  z.folder('_rels').file('.rels', rootRels);
+  const w = z.folder('word');
+  w.file('document.xml', documentXml);
+  w.file('styles.xml', stylesXml);
+  w.file('header1.xml', headerXml);
+  w.file('footer1.xml', footerXml);
+  w.folder('_rels').file('document.xml.rels', docRels);
+  media.forEach(m=> w.folder('media').file(m.file, m.data, {base64:true}));
+  return await z.generateAsync({type:'arraybuffer', compression:'DEFLATE'});
+}
+
+// ---------- PDF ----------
+function buildIbosFormPdf(form){
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit:'pt', format:'a4' });
+  const PW = pdf.internal.pageSize.getWidth(), PH = pdf.internal.pageSize.getHeight();
+  const M = 56, TOP = 66, BOTTOM = 62, maxW = PW - M * 2;
+  const rgb = hex=> [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+  const TEAL = rgb(FORM_TEAL), INK = rgb(FORM_INK), MUTED = rgb(FORM_TONE.muted);
+  let y = TOP;
+  const newPage = ()=>{ pdf.addPage(); y = TOP; };
+  const ensure = h=>{ if(y + h > PH - BOTTOM) newPage(); };
+  const font = (size, bold, italic)=>{ pdf.setFont('helvetica', bold && italic ? 'bolditalic' : bold ? 'bold' : italic ? 'italic' : 'normal'); pdf.setFontSize(size); };
+
+  function text(t, o={}){
+    const size = o.size || 10.5;
+    font(size, o.bold, o.italic);
+    pdf.setTextColor(...(o.color || INK));
+    const lh = size * 1.32;
+    pdf.splitTextToSize(String(t), maxW).forEach(line=>{
+      ensure(lh);
+      pdf.text(line, M, y + size * 0.8);
+      y += lh;
+    });
+    y += o.gap == null ? 4 : o.gap;
+  }
+  // Height a photo block will take, so headings can stay on the same page as their first photo
+  const photoBlockH = (ph, caption)=> (caption ? 22 : 0) + ph.h * Math.min(maxW / ph.w, 290 / ph.h) + 8;
+  function heading(t, o={}){
+    if(o.newPage) newPage(); else { y += 10; ensure(Math.max(60, 40 + (o.keep || 0))); }
+    text(t, {size:15, bold:true, color:TEAL, gap:4});
+    pdf.setDrawColor(...TEAL); pdf.setLineWidth(1);
+    pdf.line(M, y, M + maxW, y);
+    y += 10;
+  }
+  function sub(t, keep=0){ y += 6; ensure(Math.max(48, 30 + keep)); text(t, {size:12.5, bold:true, color:TEAL, gap:6}); }
+  function table(rows, o={}){
+    const labelW = o.labelW || maxW * 0.43, valueW = maxW - labelW, pad = 5, size = 9.5, lh = size * 1.3;
+    const all = o.header ? [{ head:true, label:o.header[0], value:o.header[1] }, ...rows] : rows;
+    pdf.setDrawColor(213, 220, 227); pdf.setLineWidth(0.6);
+    pdf.line(M, y, M + maxW, y);
+    all.forEach(r=>{
+      font(size, true, false);
+      const a = pdf.splitTextToSize(String(r.label), labelW - pad * 2);
+      font(size, r.head || (!!r.tone && r.tone !== 'muted'), !!r.empty);
+      const b = pdf.splitTextToSize(String(r.value), valueW - pad * 2);
+      const h = Math.max(a.length, b.length) * lh + pad * 2;
+      if(y + h > PH - BOTTOM){ newPage(); pdf.setDrawColor(213, 220, 227); pdf.line(M, y, M + maxW, y); }
+      if(r.head){ pdf.setFillColor(234, 240, 245); pdf.rect(M, y, maxW, h, 'F'); }
+      font(size, true, false); pdf.setTextColor(...TEAL);
+      a.forEach((ln, k)=> pdf.text(ln, M + pad, y + pad + size * 0.85 + k * lh));
+      font(size, r.head || (!!r.tone && r.tone !== 'muted'), !!r.empty);
+      pdf.setTextColor(...(r.head ? TEAL : r.tone ? rgb(FORM_TONE[r.tone]) : INK));
+      b.forEach((ln, k)=> pdf.text(ln, M + labelW + pad, y + pad + size * 0.85 + k * lh));
+      y += h;
+      pdf.setDrawColor(213, 220, 227); pdf.setLineWidth(0.6);
+      pdf.line(M, y, M + maxW, y);
+    });
+    y += 10;
+  }
+  function grid(headers, rows, fracs){
+    const widths = fracs.map(f=> f * maxW), pad = 5, size = 9, lh = size * 1.3;
+    const drawRow = (cells, head)=>{
+      const lines = cells.map((c, i)=>{ font(size, head || c.bold, false); return pdf.splitTextToSize(String(c.text || ''), widths[i] - pad * 2); });
+      const h = Math.max(...lines.map(l=> l.length), 1) * lh + pad * 2;
+      return { lines, h };
+    };
+    const paint = (cells, head, m)=>{
+      if(head){ pdf.setFillColor(234, 240, 245); pdf.rect(M, y, maxW, m.h, 'F'); }
+      let x = M;
+      cells.forEach((c, i)=>{
+        font(size, head || c.bold, false);
+        pdf.setTextColor(...(head ? TEAL : c.color ? rgb(c.color) : INK));
+        m.lines[i].forEach((ln, k)=> pdf.text(ln, x + pad, y + pad + size * 0.85 + k * lh));
+        x += widths[i];
+      });
+      y += m.h;
+      pdf.setDrawColor(213, 220, 227); pdf.setLineWidth(0.6); pdf.line(M, y, M + maxW, y);
+    };
+    const headCells = headers.map(t=> ({ text:t }));
+    const headM = drawRow(headCells, true);
+    const startTable = ()=>{ pdf.setDrawColor(213, 220, 227); pdf.setLineWidth(0.6); pdf.line(M, y, M + maxW, y); paint(headCells, true, headM); };
+    ensure(headM.h + 40);
+    startTable();
+    rows.forEach(r=>{
+      const m = drawRow(r, false);
+      if(y + m.h > PH - BOTTOM){ newPage(); startTable(); }
+      paint(r, false, m);
+    });
+    y += 10;
+  }
+  function photo(ph, caption){
+    const maxH = 290;
+    const scale = Math.min(maxW / ph.w, maxH / ph.h);
+    const w = ph.w * scale, h = ph.h * scale;
+    const capH = caption ? 22 : 0;
+    ensure(capH + h + 8);
+    if(caption) text(caption, {size:11.5, color:TEAL, gap:6});
+    try{ pdf.addImage(ph.dataUrl, 'JPEG', M, y, w, h, undefined, 'FAST'); }catch(e){}
+    y += h + 6;
+    if(ph.note) text(ph.note, {size:9.5, gap:4});
+    y += 10;
+  }
+
+  // Cover block
+  text(IBOS_DOC_TITLE, {size:24, bold:true, color:TEAL, gap:4});
+  text(form.project, {size:15, gap:4});
+  text([form.surveyDate ? `Survey date: ${form.surveyDate}` : '', `Prepared: ${form.preparedDate}`].filter(Boolean).join('     '), {size:9.5, color:MUTED, gap:10});
+  heading('At a Glance');
+  table(form.glance, {header:['IBOS checklist item', 'Status'], labelW: maxW * 0.66});
+  if(form.outstanding.length){
+    sub('Outstanding Items');
+    text('Answers still to confirm or chase before onboarding.', {size:9.5, italic:true, color:MUTED, gap:6});
+    table(form.outstanding, {header:['Item', 'Current answer'], labelW: maxW * 0.66});
+  }
+
+  form.sections.forEach((sec, i)=>{
+    const firstGroup = sec.photoGroups[0];
+    const keepFirst = !sec.rows.length && !sec.text && firstGroup ? photoBlockH(firstGroup.photos[0], formPhotoCaption(firstGroup, firstGroup.photos[0], 1)) + (firstGroup.heading ? 30 : 0) : 0;
+    // A section heading brings at least four table rows (or its first photo) onto the same page
+    heading(`${i + 1}. ${sec.title}`, { newPage: i === 0, keep: sec.rows.length ? 110 : keepFirst });
+    if(sec.rows.length) table(sec.rows);
+    if(sec.note) text(sec.note, {size:9, italic:true, color:MUTED, gap:8});
+    if(sec.text) text(sec.text, {size:10.5, gap:8});
+    if(sec.me){
+      text('Drawn from the entries logged during the survey, grouped by system.', {size:9.5, italic:true, color:MUTED, gap:4});
+      if(sec.me.notLogged.length) text(`Nothing logged for: ${sec.me.notLogged.join(', ')}`, {size:9.5, bold:true, color:rgb(FORM_TONE.warn), gap:6});
+      sec.me.systems.forEach(sys=>{
+        sub(`${sys.title} (${sys.count})`, sys.rows.length ? 50 : 0);
+        if(sys.note) text(sys.note, {size:9.5, italic:true, color:MUTED, gap:6});
+        if(sys.rows.length){
+          grid(['Asset / item', 'Location', 'Notes'],
+            sys.rows.map(r=> [{text:r.asset, bold:true, color:FORM_TEAL}, {text:r.location}, {text:r.details}]),
+            [0.32, 0.22, 0.46]);
+        }
+      });
+    }
+    sec.photoGroups.forEach(g=>{
+      if(g.heading) sub(g.heading, photoBlockH(g.photos[0], formPhotoCaption(g, g.photos[0], 1)));
+      g.photos.forEach((ph, k)=> photo(ph, formPhotoCaption(g, ph, k + 1)));
+    });
+  });
+
+  // Header and footer on every page
+  const pages = pdf.getNumberOfPages();
+  for(let pg = 1; pg <= pages; pg++){
+    pdf.setPage(pg);
+    font(8, false, false); pdf.setTextColor(...MUTED);
+    pdf.text(IBOS_FORM_CLASSIFICATION, PW - M, 34, {align:'right'});
+    pdf.text(`${IBOS_DOC_TITLE} | ${form.project}`, M, PH - 30);
+    pdf.text(`Page ${pg} of ${pages}`, PW - M, PH - 30, {align:'right'});
+  }
+  pdf.setTextColor(0, 0, 0);
+  return pdf.output('arraybuffer');
+}
+
 // Export
 el('exportBtn').addEventListener('click', async ()=>{
   el('exportBtn').disabled = true;
@@ -31087,12 +32507,12 @@ el('exportBtn').addEventListener('click', async ()=>{
 
   const project = el('biName').value.trim() || 'Site Survey';
   const grouped = {};
-  const meOrder = ['Heating','Cooling','Ventilation','DHW','DCW','Controls','Electrical','Lighting','Metering','Fabric','Other'];
+  const meOrder = [HVAC_GROUP.Heating, HVAC_GROUP.Cooling, HVAC_GROUP.HeatCool, HVAC_GROUP.Ventilation, 'HVAC', WATER_GROUP.DHW, WATER_GROUP.DCW, 'Water','Controls','Electrical','Lighting','Metering','Fabric','Other'];
   const otherOrder = ['Issues','Questions'];
   const order = [...meOrder, ...otherOrder];
   order.forEach(t=>grouped[t]=[]);
   const chronological = [...entries].sort((a,b)=> a.id.localeCompare(b.id));
-  chronological.forEach(e=>{ if(!grouped[e.tag]){ grouped[e.tag] = []; otherOrder.push(e.tag); } grouped[e.tag].push(e); });
+  chronological.forEach(e=>{ const g = exportGroupOf(e); if(!grouped[g]){ grouped[g] = []; otherOrder.push(g); } grouped[g].push(e); });
 
   // One date/time for the whole notes file: when the first entry was logged
   const firstTime = entries.reduce((min,e)=>{
@@ -31114,12 +32534,15 @@ el('exportBtn').addEventListener('click', async ()=>{
     ['Refurbishment history', bi.biRefurb]
   ].filter(([,v])=>v);
 
+  const bmsModel = bmsExportModel();
+
   // ---------- 1) Markdown (guaranteed plain-text, easiest for Claude to read back) ----------
   let md = `# Survey Notes: ${project}\n\n${firstLoggedLabel}\n\n`;
   if(hasBuildingInfo){
     md += `## Building Information\n\n`;
     biRows.forEach(([label, value])=>{ md += `**${label}:** ${value}\n\n`; });
   }
+  if(bmsModel) md += bmsToMarkdown(bmsModel);
 
   // ---------- 2) DOCX paragraphs (references "FH Oscar Pro Light" by name; Word substitutes if not installed) ----------
   const paragraphs = [];
@@ -31136,6 +32559,7 @@ el('exportBtn').addEventListener('click', async ()=>{
     });
     paragraphs.push(docxParagraph([]));
   }
+  if(bmsModel) bmsToDocx(bmsModel, paragraphs);
 
   // ---------- 3) PDF (real embedded, extractable text — not a rasterized image) ----------
   // Note: "FH Oscar Pro Light" is a commercial typeface we don't have a license to embed.
@@ -31143,39 +32567,17 @@ el('exportBtn').addEventListener('click', async ()=>{
   // this uses Helvetica as a clean stand-in, keeping the same 16/12/11 size hierarchy.
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 48;
-  const maxWidth = pageWidth - margin * 2;
-  let y = margin;
-
-  function pdfEnsureSpace(lineHeight){
-    if(y + lineHeight > pageHeight - margin){
-      pdf.addPage();
-      y = margin;
-    }
-  }
-  function pdfText(text, opts={}){
-    const { bold=false, size=SIZE_NORMAL, gapAfter=4 } = opts;
-    pdf.setFont('helvetica', bold ? 'bold' : 'normal');
-    pdf.setFontSize(size);
-    const lineHeight = size * 1.35;
-    const lines = pdf.splitTextToSize(String(text), maxWidth);
-    lines.forEach(line=>{
-      pdfEnsureSpace(lineHeight);
-      pdf.text(line, margin, y);
-      y += lineHeight;
-    });
-    y += gapAfter;
-  }
+  const pdfW = makePdfWriter(pdf);
+  const pdfText = pdfW.text;
 
   pdfText(`Survey Notes: ${project}`, { bold:true, size:SIZE_HEADER, gapAfter:2 });
   pdfText(firstLoggedLabel, { size:SIZE_NORMAL, gapAfter:10 });
   if(hasBuildingInfo){
     pdfText('Building Information', { bold:true, size:SIZE_HEADER, gapAfter:4 });
     biRows.forEach(([label, value])=> pdfText(`${label}: ${value}`, { size:SIZE_NORMAL, gapAfter:2 }));
-    y += 8;
+    pdfW.gap(8);
   }
+  if(bmsModel) bmsToPdf(bmsModel, pdfW);
 
   // ---------- Walk entries once, feeding all three formats ----------
   const zip = new JSZip();
@@ -31206,6 +32608,13 @@ el('exportBtn').addEventListener('click', async ()=>{
       paragraphs.push(docxParagraph([ docxRun(locationLabel, {size:SIZE_NORMAL}) ]));
       pdfText(locationLabel, { size:SIZE_NORMAL, gapAfter:2 });
 
+      const scopeText = scopeLabel(entry.tag, entry.scope);
+      if(scopeText){
+        md += `${scopeText}\n\n`;
+        paragraphs.push(docxParagraph([ docxRun(scopeText, {size:SIZE_NORMAL}) ]));
+        pdfText(scopeText, { size:SIZE_NORMAL, gapAfter:2 });
+      }
+
       if(tag === 'Metering'){
         const meterBits = [];
         if(entry.meterType) meterBits.push(`Type: ${entry.meterType}`);
@@ -31228,7 +32637,7 @@ el('exportBtn').addEventListener('click', async ()=>{
       if(entry.photos.length){
         const names = [];
         entry.photos.forEach(photo=>{
-          const filename = `photo-${String(photoCounter).padStart(2,'0')}-${tag.toLowerCase()}.jpg`;
+          const filename = `photo-${String(photoCounter).padStart(2,'0')}-${tag.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}.jpg`;
           const base64 = photo.split(',')[1];
           zip.file(filename, base64, {base64:true});
           names.push(filename);
@@ -31241,7 +32650,7 @@ el('exportBtn').addEventListener('click', async ()=>{
       }
 
       paragraphs.push(docxParagraph([]));
-      y += 6;
+      pdfW.gap(6);
     });
   }
 
@@ -31305,6 +32714,12 @@ el('exportBtn').addEventListener('click', async ()=>{
   zip.file('notes.md', md);
   await addDocxToZip(zip, 'notes.docx', paragraphs);
   zip.file('notes.pdf', pdf.output('arraybuffer'));
+  if(currentSurveyType() === 'ibos'){
+    const form = await buildIbosFormModel(project, bi, entries);
+    const base = `${project.replace(/[^a-z0-9]/gi,'_')}-IBOS-Site-Survey`;
+    zip.file(`${base}.docx`, await buildIbosFormDocx(form));
+    zip.file(`${base}.pdf`, buildIbosFormPdf(form));
+  }
 
   const blob = await zip.generateAsync({type:'blob'});
   const url = URL.createObjectURL(blob);
@@ -31383,6 +32798,7 @@ async function loadOpenItemsForCurrentAudit(){
       const data = JSON.parse(res.value);
       openItems.contactEmail = data.contactEmail || '';
       openItems.items = Array.isArray(data.items) ? data.items : [];
+      openItems.items.forEach(i=>{ if(LEGACY_CATEGORY[i.category]) i.category = LEGACY_CATEGORY[i.category]; });
     }
   }catch(e){}
   el('oiContactEmail').value = openItems.contactEmail;
