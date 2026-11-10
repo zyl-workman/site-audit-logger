@@ -30307,19 +30307,21 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 
 /* amber count: some entries in this category are missing No. or Location */
 #logRail .rl-ic svg{width:17px; height:17px; display:block}
-/* folded: colour tabs at the edge, current one outlined */
-#logRail.tabs{width:30px; gap:5px; padding:calc(env(safe-area-inset-top,0px) + 14px) 0 calc(env(safe-area-inset-bottom,0px) + 84px);
-  background:transparent; border-right:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; cursor:pointer}
-#logRail.tabs .rl-menu, #logRail.tabs .rl-top, #logRail.tabs .rl-t, #logRail.tabs .rl-full,
-#logRail.tabs .rl-ic, #logRail.tabs .rl-b{display:none}
-#logRail.tabs .rl-i{min-height:0; height:26px; padding:0; width:30px; background:none; flex:0 0 auto}
-#logRail.tabs .rl-i::before{display:none}
-#logRail.tabs .rl-ring{display:block; position:absolute; left:0; top:0; width:10px; height:26px; border-radius:0 5px 5px 0; background:var(--rc)}
-#logRail.tabs .rl-i.on .rl-ring{box-shadow:0 0 0 2px var(--navy-deep), 0 0 0 3.5px var(--paper)}
+/* folded: colour tabs at the edge, current one outlined. The layout of the
+   icon rail is kept (same padding, same row heights, menu slot reserved), so
+   each tab sits exactly level with its circle and is the same height as it. */
+#logRail.tabs{width:30px; background:transparent; border-right:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; cursor:pointer}
+#logRail.tabs .rl-menu, #logRail.tabs .rl-t{visibility:hidden}
+#logRail.tabs .rl-top, #logRail.tabs .rl-full, #logRail.tabs .rl-ic, #logRail.tabs .rl-b{display:none}
+#logRail.tabs .rl-i{background:none}
+#logRail.tabs .rl-ring{position:static; background:none}
+#logRail.tabs .rl-i::before{content:''; display:block; position:absolute; left:-4px; top:5px; bottom:auto; width:10px; height:34px;
+  border-radius:0 5px 5px 0; background:var(--rc)}
+#logRail.tabs .rl-i.on::before{box-shadow:0 0 0 2px var(--navy-deep), 0 0 0 3.5px var(--paper)}
+#logRail.tabs .rl-i.warn::after{content:''; position:absolute; left:2px; top:2px; width:7px; height:7px; border-radius:50%;
+  background:#f5d67a; box-shadow:0 0 0 1.5px var(--navy-deep)}
 /* opened over the page: a shadow separates it from the content underneath */
 #logRail:not(.tabs){box-shadow:8px 0 24px rgba(0,0,0,0.45)}
-#logRail.tabs .rl-i.warn .rl-ring::after{content:''; position:absolute; right:-4px; top:-3px; width:7px; height:7px; border-radius:50%;
-  background:#f5d67a; box-shadow:0 0 0 1.5px var(--navy-deep)}
 @media (min-width:800px){ #logRail.tabs{background:transparent} }
 #logRail .rl-b.warn{background:var(--navy-panel-2); border-color:#c9a63d; color:#f5d67a}
 
