@@ -30293,8 +30293,7 @@ body.ibos-mode #ibRail, body.log-mode #logRail{display:flex}
 :is(#ibRail,#logRail).wide .rl-menu{flex-direction:row; justify-content:flex-start; gap:10px; padding:0 12px}
 :is(#ibRail,#logRail).wide .rl-menu .rl-t{font-size:11px}
 /* make room for the rail on phones; beside the column on wider screens */
-body.ibos-mode .wrap{padding-left:70px}
-body.log-mode .wrap{padding-left:26px} /* room for the folded colour tabs */
+body.ibos-mode .wrap, body.log-mode .wrap{padding-left:26px} /* room for the folded colour tabs */
 body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 @media (min-width:800px){
   body.ibos-mode .wrap, body.log-mode .wrap{padding-left:16px}
@@ -30302,27 +30301,37 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
   :is(#ibRail,#logRail).wide{background:rgba(13,26,43,0.97); border-right:1px solid var(--grid-line)}
 }
 @media (prefers-reduced-motion: reduce){ :is(#ibRail,#logRail){transition:none} }
-@media (max-width:799px){ body.ibos-mode .export-bar{padding-left:70px} body.log-mode .export-bar{padding-left:26px} }
+@media (max-width:799px){ body.ibos-mode .export-bar, body.log-mode .export-bar{padding-left:26px} }
 
 
 /* amber count: some entries in this category are missing No. or Location */
-#logRail .rl-ic svg{width:17px; height:17px; display:block}
+:is(#ibRail,#logRail) .rl-ic svg{width:17px; height:17px; display:block}
+#ibosApp .sec-n svg{width:15px; height:15px; display:block} /* section titles share the rail's icons */
+/* energy audit headings: the same icons as the rail */
+.sec-ic{flex:0 0 auto; width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  background:var(--rc); color:var(--navy-deep)}
+.sec-ic svg{width:15px; height:15px; display:block}
+.sec-head{display:inline-flex; align-items:center; gap:10px}
+.sec-row{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+.sec-row .section-label{margin-bottom:0}
+#openItemsPanel > summary{gap:10px}
 /* folded: colour tabs at the edge, current one outlined. The layout of the
    icon rail is kept (same padding, same row heights, menu slot reserved), so
    each tab sits exactly level with its circle and is the same height as it. */
-#logRail.tabs{width:30px; background:transparent; border-right:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; cursor:pointer}
-#logRail.tabs .rl-menu, #logRail.tabs .rl-t{visibility:hidden}
-#logRail.tabs .rl-top, #logRail.tabs .rl-full, #logRail.tabs .rl-ic, #logRail.tabs .rl-b{display:none}
-#logRail.tabs .rl-i{background:none}
-#logRail.tabs .rl-ring{position:static; background:none}
-#logRail.tabs .rl-i::before{content:''; display:block; position:absolute; left:-4px; top:5px; bottom:auto; width:10px; height:34px;
+:is(#ibRail,#logRail).tabs{width:30px; background:transparent; border-right:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; cursor:pointer}
+:is(#ibRail,#logRail) .rl-menu, :is(#ibRail,#logRail) .rl-i{flex-shrink:0} /* rows never squeeze; the rail scrolls instead, so tabs and circles line up */
+:is(#ibRail,#logRail).tabs .rl-menu, :is(#ibRail,#logRail).tabs .rl-t, :is(#ibRail,#logRail).tabs .rl-top{visibility:hidden}
+:is(#ibRail,#logRail).tabs .rl-full, :is(#ibRail,#logRail).tabs .rl-ic, :is(#ibRail,#logRail).tabs .rl-b{display:none}
+:is(#ibRail,#logRail).tabs .rl-i{background:none}
+:is(#ibRail,#logRail).tabs .rl-ring{position:static; background:none}
+:is(#ibRail,#logRail).tabs .rl-i::before{content:''; display:block; position:absolute; left:-4px; top:5px; bottom:auto; width:10px; height:34px;
   border-radius:0 5px 5px 0; background:var(--rc)}
-#logRail.tabs .rl-i.on::before{box-shadow:0 0 0 2px var(--navy-deep), 0 0 0 3.5px var(--paper)}
-#logRail.tabs .rl-i.warn::after{content:''; position:absolute; left:2px; top:2px; width:7px; height:7px; border-radius:50%;
+:is(#ibRail,#logRail).tabs .rl-i.on::before{box-shadow:0 0 0 2px var(--navy-deep), 0 0 0 3.5px var(--paper)}
+:is(#ibRail,#logRail).tabs .rl-i.warn::after{content:''; position:absolute; left:2px; top:2px; width:7px; height:7px; border-radius:50%;
   background:#f5d67a; box-shadow:0 0 0 1.5px var(--navy-deep)}
 /* opened over the page: a shadow separates it from the content underneath */
-#logRail:not(.tabs){box-shadow:8px 0 24px rgba(0,0,0,0.45)}
-@media (min-width:800px){ #logRail.tabs{background:transparent} }
+@media (max-width:799px){ :is(#ibRail,#logRail):not(.tabs){box-shadow:8px 0 24px rgba(0,0,0,0.45)} }
+@media (min-width:800px){ :is(#ibRail,#logRail).tabs{background:transparent} }
 #logRail .rl-b.warn{background:var(--navy-panel-2); border-color:#c9a63d; color:#f5d67a}
 
 /* ---- No. / Location reminder ---- */
@@ -30350,9 +30359,6 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 /* ---- photos load as thumbnails ---- */
 .entry-photos img:not([src]), .photo-thumb:not([src]){background:var(--navy-panel-2)}
 .entry-photos img.missing{opacity:0.35}
-
-/* ---- narrow phones with the rail: the header clock collides with the logo; the phone shows the time anyway ---- */
-@media (max-width:480px){ body.ibos-mode header.top #clock{display:none} }
 
 /* ---- Open Items now sits after the log ---- */
 #openItemsPanel{margin-top:22px}
@@ -32447,6 +32453,7 @@ function renderEntries(){
     section.style.setProperty('--cat', catColor(tag));
     section.innerHTML = `
       <button class="group-head" data-tag="${tag}" aria-expanded="${!collapsedGroups.has(tag)}">
+        ${LOG_RAIL_ICON[tag] ? `<span class="sec-ic" style="--rc:${catColor(tag)}" aria-hidden="true">${LOG_RAIL_ICON[tag]}</span>` : ''}
         <span class="g-name">${tag}</span>
         <span class="g-count">${groups[tag].length}</span>
         <span class="g-chev">▾</span>
@@ -32591,7 +32598,7 @@ const LOG_RAIL_ICON = {
  "Fabric": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z'/><path d='M4 8h16'/><path d='M20 12h-16'/><path d='M4 16h16'/><path d='M9 4v4'/><path d='M14 8v4'/><path d='M8 12v4'/><path d='M16 12v4'/><path d='M11 16v4'/></svg>",
  "Other": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M5 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/><path d='M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/><path d='M19 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/></svg>",
  "Issues": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 9v4'/><path d='M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z'/><path d='M12 16h.01'/></svg>",
- "_info": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 21l18 0'/><path d='M9 8l1 0'/><path d='M9 12l1 0'/><path d='M9 16l1 0'/><path d='M14 8l1 0'/><path d='M14 12l1 0'/><path d='M14 16l1 0'/><path d='M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16'/></svg>",
+ "_info": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 21l18 0'/><path d='M5 21v-14l8 -4v18'/><path d='M19 21v-10l-6 -4'/><path d='M9 9l0 .01'/><path d='M9 12l0 .01'/><path d='M9 15l0 .01'/><path d='M9 18l0 .01'/></svg>",
  "_log": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 5l0 14'/><path d='M5 12l14 0'/></svg>",
  "_open": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4'/><path d='M12 19l0 .01'/></svg>"
 };
@@ -32721,6 +32728,36 @@ function setLogRailActive(id){
     } else b.removeAttribute('aria-current');
   });
 }
+// Section headings carry the same icons as the rail
+function headingIcon(svg, color){
+  const span = document.createElement('span');
+  span.className = 'sec-ic';
+  span.style.setProperty('--rc', color);
+  span.setAttribute('aria-hidden', 'true');
+  span.innerHTML = svg;
+  return span;
+}
+function decorateEnergyHeadings(){
+  const bi = document.querySelector('#biPanel > summary');
+  if(bi && !bi.querySelector('.sec-ic') && bi.firstChild && bi.firstChild.nodeType === 3){
+    const head = document.createElement('span');
+    head.className = 'sec-head';
+    head.appendChild(headingIcon(LOG_RAIL_ICON._info, 'var(--paper)'));
+    head.appendChild(document.createTextNode(bi.firstChild.textContent.trim()));
+    bi.replaceChild(head, bi.firstChild);
+  }
+  const label = el('entryFormLabel');
+  if(label && !label.parentElement.classList.contains('sec-row')){
+    const row = document.createElement('div');
+    row.className = 'sec-row';
+    label.parentElement.insertBefore(row, label);
+    row.appendChild(headingIcon(LOG_RAIL_ICON._log, 'var(--copper)'));
+    row.appendChild(label);
+  }
+  const oi = document.querySelector('#openItemsPanel > summary');
+  if(oi && !oi.querySelector('.sec-ic')) oi.insertBefore(headingIcon(LOG_RAIL_ICON._open, 'var(--questions)'), oi.firstChild);
+}
+decorateEnergyHeadings();
 function spyLogRail(){
   if(!logRailItems.length || !document.body.classList.contains('log-mode')) return;
   if(performance.now() < logRailPickedUntil) return;
@@ -34753,7 +34790,7 @@ function render(){
   syncTimes(); const m = $("#ibosMain"); m.innerHTML = "";
   // site details
   const sd = document.createElement("details"); sd.className="panel ib-site"; sd.open = !state.site.name;
-  sd.innerHTML = `<summary><span class="sec-n">i</span><span class="sec-t"><h2>Site details</h2><small id="siteSum"></small></span><span class="chev">›</span></summary>
+  sd.innerHTML = `<summary><span class="sec-n">${RAIL_ICON.site}</span><span class="sec-t"><h2>Site details</h2><small id="siteSum"></small></span><span class="chev">›</span></summary>
    <div class="fields">
     <label class="f">Site / building name<input data-s="name" autocomplete="off"></label>
     <label class="f">Address<input data-s="address" autocomplete="off"></label>
@@ -34771,11 +34808,11 @@ function render(){
   m.appendChild(sd);
 
   const ad = document.createElement("details"); ad.className="panel"; ad.id="attPanel"; ad.open=true;
-  ad.innerHTML = `<summary><span class="sec-n" style="background:#D64545">!</span><span class="sec-t"><h2>Action tracker</h2><small id="attSum"></small></span><span class="chev">›</span></summary><div class="att" id="att"></div>`;
+  ad.innerHTML = `<summary><span class="sec-n" style="background:#D64545">${RAIL_ICON.att}</span><span class="sec-t"><h2>Action tracker</h2><small id="attSum"></small></span><span class="chev">›</span></summary><div class="att" id="att"></div>`;
   m.appendChild(ad);
 
   const cd = document.createElement("details"); cd.className="panel"; cd.open=false;
-  cd.innerHTML = `<summary><span class="sec-n" style="background:#3369FF">C</span><span class="sec-t"><h2>Property classification</h2><small id="clsSum"></small></span><span class="chev">›</span></summary>
+  cd.innerHTML = `<summary><span class="sec-n" style="background:#3369FF">${RAIL_ICON.cls}</span><span class="sec-t"><h2>Property classification</h2><small id="clsSum"></small></span><span class="chev">›</span></summary>
    <div class="cls"><h3>Property profile</h3>${PROFILE.map(([k,l,opts,ph])=>`<label class="q">${esc(l)}${opts?`<select data-pf="${k}"><option value="">Select…</option>${opts.map(o=>`<option>${esc(o)}</option>`).join("")}</select>`:`<input data-pf="${k}" placeholder="${esc(ph||"")}" autocomplete="off">`}</label>`).join("")}
    <h3>Infrastructure — BACnet/IP centralised</h3>${INFRA.map(d=>`<label class="q">${esc(d.q)}<select data-inf="${d.k}"><option value="">Select…</option>${d.o.map(o=>`<option>${esc(o[0])}</option>`).join("")}</select></label>`).join("")}
    <h3>Classification</h3><div class="result" id="clsResult"></div>
@@ -34791,7 +34828,7 @@ function render(){
   m.appendChild(cd);
 
   const vd = document.createElement("details"); vd.className="panel"; vd.id="valPanel"; vd.open=false; const vc=vcfg();
-  vd.innerHTML = `<summary><span class="sec-n" style="background:linear-gradient(135deg,#0B1B33,#3369FF)">↗</span><span class="sec-t"><h2>Value with IBOS — today and future</h2><small id="valSum"></small></span><span class="chev">›</span></summary>
+  vd.innerHTML = `<summary><span class="sec-n" style="background:linear-gradient(135deg,#0B1B33,#3369FF)">${RAIL_ICON.val}</span><span class="sec-t"><h2>Value with IBOS — today and future</h2><small id="valSum"></small></span><span class="chev">›</span></summary>
    <div class="cls"><p class="hint" style="margin-top:0">Where the building is today from the survey, and where it could be with IBOS. The projection follows the targets below and is capped by what the survey found (network, metering, access).</p>
    <h3>Optional — energy value</h3><div class="vin"><label>Annual energy spend (£)<input data-v="spend" inputmode="decimal" placeholder="e.g. 250000"></label><label>Saving low %<input data-v="low" inputmode="decimal" placeholder="e.g. 5"></label><label>Saving high %<input data-v="high" inputmode="decimal" placeholder="e.g. 15"></label></div>
    <p class="hint">Leave blank to show capability only. For reference, BCIA cites 15–25% energy-efficiency improvement as a performance target at its Level 3; enter the range you are prepared to stand behind for this site.</p>
@@ -34805,7 +34842,7 @@ function render(){
   m.appendChild(vd);
 
   const wd=document.createElement("details"); wd.className="panel"; wd.id="wkPanel"; wd.open=false;
-  wd.innerHTML=`<summary><span class="sec-n" style="background:#ED7D31">W</span><span class="sec-t"><h2>Works and scope to confirm</h2><small id="wkSum"></small></span><span class="chev">›</span></summary>
+  wd.innerHTML=`<summary><span class="sec-n" style="background:#ED7D31">${RAIL_ICON.wk}</span><span class="sec-t"><h2>Works and scope to confirm</h2><small id="wkSum"></small></span><span class="chev">›</span></summary>
    <div class="wk"><p class="hint" style="margin-top:0">Schedule of works and scope to agree with contractors before integration. Items are added automatically from the survey; set who confirms, the status and notes, or add your own.</p>
    <div id="wkList"></div><button class="btn ghost small" id="wkAdd" style="margin-top:8px">+ Add works item</button></div>`;
   m.appendChild(wd);
@@ -34814,13 +34851,13 @@ function render(){
   DEF.forEach((sec,si)=>{
     const d = document.createElement("details"); d.className="panel"; d.open = si<2; d.dataset.sec=sec.id;
     const [tl,tc] = TIER[sec.tier];
-    d.innerHTML = `<summary><span class="sec-n">${si+1}</span><span class="sec-t"><h2>${esc(sec.title)} <span class="pill ${tc}">${tl}</span></h2>${sec.note?`<small class="tier-note ${tc}">${esc(sec.note)}</small>`:""}<small data-count></small></span><span class="chev">›</span></summary>`;
+    d.innerHTML = `<summary><span class="sec-n">${RAIL_ICON[sec.id] || (si+1)}</span><span class="sec-t"><h2>${esc(sec.title)} <span class="pill ${tc}">${tl}</span></h2>${sec.note?`<small class="tier-note ${tc}">${esc(sec.note)}</small>`:""}<small data-count></small></span><span class="chev">›</span></summary>`;
     sec.items.forEach(([id,t,hint,cred])=>d.appendChild(itemEl(id,t,hint,cred)));
     m.appendChild(d);
   });
 
   const md = document.createElement("details"); md.className="panel"; md.id="miscPanel"; md.open=false;
-  md.innerHTML = `<summary><span class="sec-n">${DEF.length+1}</span><span class="sec-t"><h2>Misc — commentary and photos <span class="pill opt">Optional</span></h2><small id="miscSum"></small></span><span class="chev">›</span></summary><div id="miscList"></div><button class="btn ghost small addmisc" id="addMisc">+ Add another misc entry</button>`;
+  md.innerHTML = `<summary><span class="sec-n">${RAIL_ICON.misc}</span><span class="sec-t"><h2>Misc — commentary and photos <span class="pill opt">Optional</span></h2><small id="miscSum"></small></span><span class="chev">›</span></summary><div id="miscList"></div><button class="btn ghost small addmisc" id="addMisc">+ Add another misc entry</button>`;
   m.appendChild(md);
   paintMisc();
   $("#addMisc").onclick=()=>{ const n=1+Math.max(0,...state.misc.map(x=>+x.id.split("_")[1]||0)); const e={id:"misc_"+n,title:""}; state.misc.push(e); const el=itemEl(e.id,"",null,false,true); $("#miscList").appendChild(el); $(".head",el).click(); miscSum(); save(); };
@@ -34831,7 +34868,7 @@ function render(){
   const whoHTML=(k,title,fields)=>`<div class="who" data-who="${k}"><h3>${title}</h3>${fields.map(([f,l,t,ph])=>`<label class="q">${l}<input data-so="${f}" type="${t||"text"}" placeholder="${ph||""}" autocomplete="off"></label>`).join("")}
      <label class="q" style="margin-bottom:0">Signature</label><div class="pad"><span class="ln"></span><span class="ph">Sign here with your finger</span><canvas aria-label="${title} signature pad"></canvas></div>
      <div class="padrow"><span class="st"></span><button type="button" class="reset" data-clear>Clear signature</button></div></div>`;
-  sd2.innerHTML = `<summary><span class="sec-n" style="background:#2FA36B">✓</span><span class="sec-t"><h2>Date and sign-off</h2><small id="signSum"></small></span><span class="chev">›</span></summary>
+  sd2.innerHTML = `<summary><span class="sec-n" style="background:#2FA36B">${RAIL_ICON.sign}</span><span class="sec-t"><h2>Date and sign-off</h2><small id="signSum"></small></span><span class="chev">›</span></summary>
    <div class="sign"><div class="decl">The survey was carried out on the date below and the findings are as recorded in this record. It is an indicative site survey, not a design or a certified compliance audit.</div>
    ${whoHTML("surveyor","Surveyor/Engineer (IBOS)",[["name","Name"],["role","Role","text","e.g. Building services engineer"],["date","Date","date"]])}
    ${whoHTML("client","Site representative",[["name","Name"],["company","Company","text","e.g. FM provider or landlord"],["role","Role","text","e.g. Building manager"],["date","Date","date"]])}</div>`;
@@ -35044,6 +35081,8 @@ async function toJpeg(f){ try{ if(typeof isHeic==="function" && isHeic(f) && win
 /* ---------------- section index: a rail on the left to jump between sections ---------------- */
 const RAIL_C={site:"#eef1ea",att:"#c9524a",cls:"#9b8ad1",val:"#4f9dc9",wk:"#d9704b",req:"#c97a3c",chk:"#9b8ad1",opt:"#8b9bb0",misc:"#8b9bb0",sign:"#7fae6a"};
 const RAIL_SHORT={min:"Access",net:"Network",bms:"BMS",mep:"MEP",info:"Info",docs:"Docs"};
+// Section icons from Tabler Icons (MIT licence, tabler.io/icons), embedded so they work offline
+const RAIL_ICON = {"site": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 21l18 0'/><path d='M5 21v-14l8 -4v18'/><path d='M19 21v-10l-6 -4'/><path d='M9 9l0 .01'/><path d='M9 12l0 .01'/><path d='M9 15l0 .01'/><path d='M9 18l0 .01'/></svg>", "att": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9z'/><path d='M5 21v-7'/></svg>", "cls": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M22 6h-5v5h-5v5h-5v5h-5'/><path d='M6 10v-7'/><path d='M3 6l3 -3l3 3'/></svg>", "val": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 17l6 -6l4 4l8 -8'/><path d='M14 7l7 0l0 7'/></svg>", "wk": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5'/></svg>", "min": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.239 .578l-.175 .008h-1.172a1 1 0 0 1 -.993 -.883l-.007 -.117v-1.172a2 2 0 0 1 .467 -1.284l.119 -.13l.414 -.414h2v-2h2v-2l2.144 -2.144l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0z'/><path d='M15 9h.01'/></svg>", "net": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 9a6 6 0 1 0 12 0a6 6 0 0 0 -12 0'/><path d='M12 3c1.333 .333 2 2.333 2 6s-.667 5.667 -2 6'/><path d='M12 3c-1.333 .333 -2 2.333 -2 6s.667 5.667 2 6'/><path d='M6 9h12'/><path d='M3 20h7'/><path d='M14 20h7'/><path d='M10 20a2 2 0 1 0 4 0a2 2 0 0 0 -4 0'/><path d='M12 15v3'/></svg>", "bms": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 4m0 1a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1z'/><path d='M7 20h10'/><path d='M9 16v4'/><path d='M15 16v4'/><path d='M9 12v-4'/><path d='M12 12v-1'/><path d='M15 12v-2'/><path d='M12 12v-1'/></svg>", "mep": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 10v6'/><path d='M12 5v3'/><path d='M10 5h4'/><path d='M5 13h-2'/><path d='M6 10h2l2 -2h3.382a1 1 0 0 1 .894 .553l1.448 2.894a1 1 0 0 0 .894 .553h1.382v-2h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2v-2h-3v2a1 1 0 0 1 -1 1h-3.465a1 1 0 0 1 -.832 -.445l-1.703 -2.555h-2v-6z'/></svg>", "info": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M13 5h8'/><path d='M13 9h5'/><path d='M13 15h8'/><path d='M13 19h5'/><path d='M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z'/><path d='M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z'/></svg>", "docs": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M14 3v4a1 1 0 0 0 1 1h4'/><path d='M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z'/><path d='M9 17h6'/><path d='M9 13h6'/></svg>", "misc": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18'/><path d='M13 8l2 0'/><path d='M13 12l2 0'/></svg>", "sign": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 17c3.333 -3.333 5 -6 5 -8c0 -3 -1 -3 -2 -3s-2.032 1.085 -2 3c.034 2.048 1.658 4.877 2.5 6c1.5 2 2.5 2.5 3.5 1l2 -3c.333 2.667 1.333 4 3 4c.53 0 2.639 -2 3 -2c.517 0 1.517 .667 3 2'/></svg>"};
 function railDefs(){
   const main=$("#ibosMain"); if(!main) return [];
   const P=[...main.querySelectorAll(":scope > details.panel")];
@@ -35054,24 +35093,31 @@ function railDefs(){
     const glyph = {site:"i",att:"!",cls:"C",val:"↗",wk:"W",misc:String(DEF.length+1),sign:"✓"}[k] || String(si);
     const short = sec?RAIL_SHORT[sec.id]||sec.title.split(" ")[0] : {site:"Site",att:"Actions",cls:"Class",val:"Value",wk:"Works",misc:"Misc",sign:"Sign-off"}[k];
     const full = (d.querySelector("summary h2")||{}).firstChild ? d.querySelector("summary h2").firstChild.textContent.trim() : short;
-    return {id:d.id, el:d, k, glyph, short, full, color:RAIL_C[k]||RAIL_C.opt, sec};
+    const icon = RAIL_ICON[sec ? sec.id : k] || "";
+    return {id:d.id, el:d, k, glyph, icon, short, full, color:RAIL_C[k]||RAIL_C.opt, sec};
   });
 }
 let railItems=[], railActive=null;
 function buildRail(){
   let nav=document.getElementById("ibRail");
-  if(!nav){ nav=document.createElement("nav"); nav.id="ibRail"; nav.setAttribute("aria-label","Survey sections"); document.body.appendChild(nav);
+  if(!nav){ nav=document.createElement("nav"); nav.id="ibRail"; nav.className="tabs"; nav.setAttribute("aria-label","Survey sections"); document.body.appendChild(nav);
+    nav.addEventListener("click",e=>{ if(nav.classList.contains("tabs")){ e.stopPropagation(); setRailState("open"); } }); // folded to tabs: a tap opens the icon rail
     window.addEventListener("scroll",()=>{ if(!railScrollQueued){ railScrollQueued=true; requestAnimationFrame(()=>{ railScrollQueued=false; spyRail(); }); } },{passive:true});
-    document.addEventListener("click",e=>{ if(nav.classList.contains("wide") && !nav.contains(e.target)) nav.classList.remove("wide"); }); }
+    document.addEventListener("click",e=>{ if(!nav.classList.contains("tabs") && !nav.contains(e.target)) setRailState("tabs"); }); }
   railItems=railDefs();
   nav.innerHTML=`<button type="button" class="rl-menu" aria-label="Show section names" aria-expanded="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="rl-t">Index</span></button>`+
-    railItems.map(it=>`<button type="button" class="rl-i" data-go="${it.id}" style="--rc:${it.color}" title="${esc(it.full)}"><span class="rl-ring"><span class="rl-ic">${esc(it.glyph)}</span><span class="rl-b" hidden></span></span><span class="rl-t">${esc(it.short)}</span><span class="rl-full"><b>${esc(it.full)}</b><small></small></span></button>`).join("")+
+    railItems.map(it=>`<button type="button" class="rl-i" data-go="${it.id}" style="--rc:${it.color}" title="${esc(it.full)}"><span class="rl-ring"><span class="rl-ic">${it.icon || esc(it.glyph)}</span><span class="rl-b" hidden></span></span><span class="rl-t">${esc(it.short)}</span><span class="rl-full"><b>${esc(it.full)}</b><small></small></span></button>`).join("")+
     `<button type="button" class="rl-i rl-top" data-go="top" title="Back to top"><span class="rl-ring"><span class="rl-ic">↑</span></span><span class="rl-t">Top</span><span class="rl-full"><b>Back to top</b></span></button>`;
-  const menu=$(".rl-menu",nav); menu.onclick=e=>{ e.stopPropagation(); const w=nav.classList.toggle("wide"); menu.setAttribute("aria-expanded",w); };
-  nav.querySelectorAll("[data-go]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); goPanel(b.dataset.go); nav.classList.remove("wide"); menu.setAttribute("aria-expanded","false"); });
+  const menu=$(".rl-menu",nav); menu.onclick=e=>{ if(nav.classList.contains("tabs")) return; e.stopPropagation(); setRailState(nav.classList.contains("wide")?"open":"wide"); };
+  nav.querySelectorAll("[data-go]").forEach(b=>b.onclick=e=>{ if(nav.classList.contains("tabs")) return; e.stopPropagation(); goPanel(b.dataset.go); setRailState("tabs"); });
+  menu.setAttribute("aria-expanded", String(nav.classList.contains("wide")));
   paintRail(); spyRail();
 }
 let railScrollQueued=false;
+// Three states, as in the energy audit log: "tabs" (default colour tabs), "open" (icon rail), "wide" (names and summaries)
+function setRailState(state){ const nav=document.getElementById("ibRail"); if(!nav) return;
+  nav.classList.toggle("tabs", state==="tabs"); nav.classList.toggle("wide", state==="wide");
+  const menu=nav.querySelector(".rl-menu"); if(menu){ menu.setAttribute("aria-expanded", String(state==="wide")); menu.setAttribute("aria-label", state==="wide"?"Hide section names":"Show section names"); } }
 function goPanel(id){
   const smooth=matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth";
   if(id==="top"){ window.scrollTo({top:0,behavior:smooth}); return; }
