@@ -30305,6 +30305,7 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 
 
 /* amber count: some entries in this category are missing No. or Location */
+#logRail .rl-ic svg{width:17px; height:17px; display:block}
 #logRail .rl-b.warn{background:var(--navy-panel-2); border-color:#c9a63d; color:#f5d67a}
 
 /* ---- No. / Location reminder ---- */
@@ -32560,7 +32561,21 @@ function renderEntries(){
    count, and an amber count when some of its entries are missing No. or
    Location. Tapping jumps there (expanding a collapsed category).
    ========================================================================= */
-const LOG_RAIL_GLYPH = { HVAC:'HV', Water:'Wa', Controls:'Co', Electrical:'El', Lighting:'Li', Metering:'Me', Fabric:'Fa', Other:'Ot', Issues:'!' };
+// Icons from Tabler Icons (MIT licence, tabler.io/icons), embedded so they work offline
+const LOG_RAIL_ICON = {
+ "HVAC": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 13m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0'/><path d='M14.167 10.5c.722 -1.538 1.156 -3.043 1.303 -4.514c.22 -1.63 -.762 -2.986 -3.47 -2.986s-3.69 1.357 -3.47 2.986c.147 1.471 .581 2.976 1.303 4.514'/><path d='M13.169 16.751c.97 1.395 2.057 2.523 3.257 3.386c1.3 1 2.967 .833 4.321 -1.512c1.354 -2.345 .67 -3.874 -.85 -4.498c-1.348 -.608 -2.868 -.985 -4.562 -1.128'/><path d='M8.664 13c-1.693 .143 -3.213 .52 -4.56 1.128c-1.522 .623 -2.206 2.153 -.852 4.498s3.02 2.517 4.321 1.512c1.2 -.863 2.287 -1.991 3.258 -3.386'/></svg>",
+ "Water": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546z'/></svg>",
+ "Controls": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/><path d='M4 6l8 0'/><path d='M16 6l4 0'/><path d='M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/><path d='M4 12l2 0'/><path d='M10 12l10 0'/><path d='M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/><path d='M4 18l11 0'/><path d='M19 18l1 0'/></svg>",
+ "Electrical": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11'/></svg>",
+ "Lighting": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7'/><path d='M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3'/><path d='M9.7 17l4.6 0'/></svg>",
+ "Metering": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0'/><path d='M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/><path d='M13.41 10.59l2.59 -2.59'/><path d='M7 12a5 5 0 0 1 5 -5'/></svg>",
+ "Fabric": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z'/><path d='M4 8h16'/><path d='M20 12h-16'/><path d='M4 16h16'/><path d='M9 4v4'/><path d='M14 8v4'/><path d='M8 12v4'/><path d='M16 12v4'/><path d='M11 16v4'/></svg>",
+ "Other": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M5 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/><path d='M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/><path d='M19 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0'/></svg>",
+ "Issues": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 9v4'/><path d='M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z'/><path d='M12 16h.01'/></svg>",
+ "_info": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 21l18 0'/><path d='M9 8l1 0'/><path d='M9 12l1 0'/><path d='M9 16l1 0'/><path d='M14 8l1 0'/><path d='M14 12l1 0'/><path d='M14 16l1 0'/><path d='M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16'/></svg>",
+ "_log": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 5l0 14'/><path d='M5 12l14 0'/></svg>",
+ "_open": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4'/><path d='M12 19l0 .01'/></svg>"
+};
 const LOG_RAIL_SHORT = { Electrical:'Elec.' };
 let logRailItems = [], logRailActive = null, logRailScrollQueued = false, logRailQueued = false;
 let logRailPicked = null, logRailPickedUntil = 0; // the section just tapped, so the highlight doesn't jump while scrolling to it
@@ -32573,9 +32588,9 @@ function logRailOn(){ return !!currentAuditId && currentSurveyType() !== 'ibos';
 function logRailDefs(){
   const items = [];
   if(!el('biPanel').hidden){
-    items.push({ id:'biPanel', glyph:'i', short:'Info', full:'Building information', color:'var(--paper)', sub: el('biName').value.trim() });
+    items.push({ id:'biPanel', icon: LOG_RAIL_ICON._info, glyph:'i', short:'Info', full:'Building information', color:'var(--paper)', sub: el('biName').value.trim() });
   }
-  items.push({ id:'entryFormPanel', glyph:'+', short:'Log', full: editingEntryId ? 'Editing an entry' : 'Log an entry', color:'var(--copper)', sub:'' });
+  items.push({ id:'entryFormPanel', icon: LOG_RAIL_ICON._log, glyph:'+', short:'Log', full: editingEntryId ? 'Editing an entry' : 'Log an entry', color:'var(--copper)', sub:'' });
   if(!el('bmsPanel').hidden){
     items.push({ id:'bmsPanel', glyph:'B', short:'BMS', full:'BMS networking', color:'var(--controls)', sub:'' });
   }
@@ -32589,11 +32604,11 @@ function logRailDefs(){
     list.forEach(e=>{ if(e.subtype) tally[e.subtype] = (tally[e.subtype] || 0) + 1; });
     const types = Object.entries(tally).sort((a,b)=> b[1] - a[1]).map(([k,n])=> `${k} ${n}`).join(' · ');
     const sub = missing ? `${missing} missing details${types ? ' · ' + types : ''}` : types;
-    items.push({ id:'group-' + tag, tag, glyph: LOG_RAIL_GLYPH[tag] || tag.slice(0,2), short: LOG_RAIL_SHORT[tag] || tag,
+    items.push({ id:'group-' + tag, tag, icon: LOG_RAIL_ICON[tag] || '', glyph: tag.slice(0,2), short: LOG_RAIL_SHORT[tag] || tag,
       full: tag, color: catColor(tag), badge: String(list.length), warn: missing > 0, sub });
   });
   const outstanding = outstandingItems().length;
-  items.push({ id:'openItemsPanel', glyph:'?', short:'Open', full:'Open items', color:'var(--questions)',
+  items.push({ id:'openItemsPanel', icon: LOG_RAIL_ICON._open, glyph:'?', short:'Open', full:'Open items', color:'var(--questions)',
     badge: outstanding ? String(outstanding) : '', sub: outstanding ? `${outstanding} outstanding` : (openItems.items.length ? 'All answered' : 'None yet') });
   return items;
 }
@@ -32621,7 +32636,7 @@ function buildLogRail(){
   const wide = nav.classList.contains('wide');
   nav.innerHTML =
     `<button type="button" class="rl-menu" aria-label="${wide ? 'Hide' : 'Show'} section names" aria-expanded="${wide}"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="rl-t">Index</span></button>` +
-    logRailItems.map(it=> `<button type="button" class="rl-i" data-go="${it.id}" style="--rc:${it.color}" title="${escapeHtml(it.full)}"><span class="rl-ring"><span class="rl-ic">${escapeHtml(it.glyph)}</span>${it.badge ? `<span class="rl-b${it.warn ? ' warn' : ''}">${escapeHtml(it.badge)}</span>` : ''}</span><span class="rl-t">${escapeHtml(it.short)}</span><span class="rl-full"><b>${escapeHtml(it.full)}</b><small>${escapeHtml(it.sub || '')}</small></span></button>`).join('') +
+    logRailItems.map(it=> `<button type="button" class="rl-i" data-go="${it.id}" style="--rc:${it.color}" title="${escapeHtml(it.full)}"><span class="rl-ring"><span class="rl-ic">${it.icon || escapeHtml(it.glyph)}</span>${it.badge ? `<span class="rl-b${it.warn ? ' warn' : ''}">${escapeHtml(it.badge)}</span>` : ''}</span><span class="rl-t">${escapeHtml(it.short)}</span><span class="rl-full"><b>${escapeHtml(it.full)}</b><small>${escapeHtml(it.sub || '')}</small></span></button>`).join('') +
     `<button type="button" class="rl-i rl-top" data-go="top" title="Back to top"><span class="rl-ring"><span class="rl-ic">↑</span></span><span class="rl-t">Top</span><span class="rl-full"><b>Back to top</b></span></button>`;
   nav.scrollTop = keepScroll;
   nav.querySelector('.rl-menu').addEventListener('click', (e)=>{ e.stopPropagation(); setLogRailWide(!nav.classList.contains('wide')); });
