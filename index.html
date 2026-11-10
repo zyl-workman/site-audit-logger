@@ -30293,7 +30293,8 @@ body.ibos-mode #ibRail, body.log-mode #logRail{display:flex}
 :is(#ibRail,#logRail).wide .rl-menu{flex-direction:row; justify-content:flex-start; gap:10px; padding:0 12px}
 :is(#ibRail,#logRail).wide .rl-menu .rl-t{font-size:11px}
 /* make room for the rail on phones; beside the column on wider screens */
-body.ibos-mode .wrap, body.log-mode .wrap{padding-left:70px}
+body.ibos-mode .wrap{padding-left:70px}
+body.log-mode .wrap{padding-left:26px} /* room for the folded colour tabs */
 body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 @media (min-width:800px){
   body.ibos-mode .wrap, body.log-mode .wrap{padding-left:16px}
@@ -30301,11 +30302,25 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
   :is(#ibRail,#logRail).wide{background:rgba(13,26,43,0.97); border-right:1px solid var(--grid-line)}
 }
 @media (prefers-reduced-motion: reduce){ :is(#ibRail,#logRail){transition:none} }
-@media (max-width:799px){ body.ibos-mode .export-bar, body.log-mode .export-bar{padding-left:70px} }
+@media (max-width:799px){ body.ibos-mode .export-bar{padding-left:70px} body.log-mode .export-bar{padding-left:26px} }
 
 
 /* amber count: some entries in this category are missing No. or Location */
 #logRail .rl-ic svg{width:17px; height:17px; display:block}
+/* folded: colour tabs at the edge, current one outlined */
+#logRail.tabs{width:30px; gap:5px; padding:calc(env(safe-area-inset-top,0px) + 14px) 0 calc(env(safe-area-inset-bottom,0px) + 84px);
+  background:transparent; border-right:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; cursor:pointer}
+#logRail.tabs .rl-menu, #logRail.tabs .rl-top, #logRail.tabs .rl-t, #logRail.tabs .rl-full,
+#logRail.tabs .rl-ic, #logRail.tabs .rl-b{display:none}
+#logRail.tabs .rl-i{min-height:0; height:26px; padding:0; width:30px; background:none; flex:0 0 auto}
+#logRail.tabs .rl-i::before{display:none}
+#logRail.tabs .rl-ring{display:block; position:absolute; left:0; top:0; width:10px; height:26px; border-radius:0 5px 5px 0; background:var(--rc)}
+#logRail.tabs .rl-i.on .rl-ring{box-shadow:0 0 0 2px var(--navy-deep), 0 0 0 3.5px var(--paper)}
+/* opened over the page: a shadow separates it from the content underneath */
+#logRail:not(.tabs){box-shadow:8px 0 24px rgba(0,0,0,0.45)}
+#logRail.tabs .rl-i.warn .rl-ring::after{content:''; position:absolute; right:-4px; top:-3px; width:7px; height:7px; border-radius:50%;
+  background:#f5d67a; box-shadow:0 0 0 1.5px var(--navy-deep)}
+@media (min-width:800px){ #logRail.tabs{background:transparent} }
 #logRail .rl-b.warn{background:var(--navy-panel-2); border-color:#c9a63d; color:#f5d67a}
 
 /* ---- No. / Location reminder ---- */
@@ -30327,7 +30342,7 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 .log-toast .lt-act{flex:0 0 auto; background:#f5d67a; color:var(--navy-deep); border:none; border-radius:var(--radius); cursor:pointer;
   font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; padding:8px 12px}
 .log-toast .lt-act:focus-visible{outline:2px solid var(--paper); outline-offset:2px}
-@media (max-width:799px){ body.log-mode .log-toast{left:86px} }
+@media (max-width:799px){ body.log-mode .log-toast{left:34px} }
 @media (prefers-reduced-motion: reduce){ .log-toast, .log-toast.on{transition:none} }
 
 /* ---- photos load as thumbnails ---- */
@@ -30335,7 +30350,7 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 .entry-photos img.missing{opacity:0.35}
 
 /* ---- narrow phones with the rail: the header clock collides with the logo; the phone shows the time anyway ---- */
-@media (max-width:480px){ body.ibos-mode header.top #clock, body.log-mode header.top #clock{display:none} }
+@media (max-width:480px){ body.ibos-mode header.top #clock{display:none} }
 
 /* ---- Open Items now sits after the log ---- */
 #openItemsPanel{margin-top:22px}
@@ -32555,9 +32570,11 @@ function renderEntries(){
 /* =========================================================================
    LOG RAIL — section index for energy audits
    -------------------------------------------------------------------------
-   The same rail as the IBOS interface: a narrow column on the left with one
-   button per section, the menu button widens it to show full names and a
-   summary line. Categories appear once they have entries; each shows its
+   By default it's folded to a strip of colour tabs at the left edge (the
+   current section outlined). Tapping the strip opens the same icon rail as
+   the IBOS interface over the page; its menu button widens it to show full
+   names and a summary line. Choosing a section, or tapping elsewhere, folds
+   it back to tabs. Categories appear once they have entries; each shows its
    count, and an amber count when some of its entries are missing No. or
    Location. Tapping jumps there (expanding a collapsed category).
    ========================================================================= */
@@ -32617,7 +32634,12 @@ function buildLogRail(){
   if(!nav){
     nav = document.createElement('nav');
     nav.id = 'logRail';
+    nav.className = 'tabs';
     nav.setAttribute('aria-label', 'Survey sections');
+    // Folded to colour tabs: any tap on the strip opens the icon rail
+    nav.addEventListener('click', (e)=>{
+      if(nav.classList.contains('tabs')){ e.stopPropagation(); setLogRailState('open'); }
+    });
     document.body.appendChild(nav);
     window.addEventListener('scroll', ()=>{
       if(logRailScrollQueued) return;
@@ -32625,7 +32647,7 @@ function buildLogRail(){
       requestAnimationFrame(()=>{ logRailScrollQueued = false; spyLogRail(); });
     }, { passive:true });
     document.addEventListener('click', (e)=>{
-      if(nav.classList.contains('wide') && !nav.contains(e.target)) setLogRailWide(false);
+      if(!nav.classList.contains('tabs') && !nav.contains(e.target)) setLogRailState('tabs');
     });
   }
   const on = logRailOn();
@@ -32636,19 +32658,31 @@ function buildLogRail(){
   const wide = nav.classList.contains('wide');
   nav.innerHTML =
     `<button type="button" class="rl-menu" aria-label="${wide ? 'Hide' : 'Show'} section names" aria-expanded="${wide}"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="rl-t">Index</span></button>` +
-    logRailItems.map(it=> `<button type="button" class="rl-i" data-go="${it.id}" style="--rc:${it.color}" title="${escapeHtml(it.full)}"><span class="rl-ring"><span class="rl-ic">${it.icon || escapeHtml(it.glyph)}</span>${it.badge ? `<span class="rl-b${it.warn ? ' warn' : ''}">${escapeHtml(it.badge)}</span>` : ''}</span><span class="rl-t">${escapeHtml(it.short)}</span><span class="rl-full"><b>${escapeHtml(it.full)}</b><small>${escapeHtml(it.sub || '')}</small></span></button>`).join('') +
+    logRailItems.map(it=> `<button type="button" class="rl-i${it.warn ? ' warn' : ''}" data-go="${it.id}" style="--rc:${it.color}" title="${escapeHtml(it.full)}"><span class="rl-ring"><span class="rl-ic">${it.icon || escapeHtml(it.glyph)}</span>${it.badge ? `<span class="rl-b${it.warn ? ' warn' : ''}">${escapeHtml(it.badge)}</span>` : ''}</span><span class="rl-t">${escapeHtml(it.short)}</span><span class="rl-full"><b>${escapeHtml(it.full)}</b><small>${escapeHtml(it.sub || '')}</small></span></button>`).join('') +
     `<button type="button" class="rl-i rl-top" data-go="top" title="Back to top"><span class="rl-ring"><span class="rl-ic">↑</span></span><span class="rl-t">Top</span><span class="rl-full"><b>Back to top</b></span></button>`;
   nav.scrollTop = keepScroll;
-  nav.querySelector('.rl-menu').addEventListener('click', (e)=>{ e.stopPropagation(); setLogRailWide(!nav.classList.contains('wide')); });
-  nav.querySelectorAll('[data-go]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); goLogSection(b.dataset.go); setLogRailWide(false); }));
+  nav.querySelector('.rl-menu').addEventListener('click', (e)=>{
+    if(nav.classList.contains('tabs')) return; // handled by the strip: opens the icon rail
+    e.stopPropagation();
+    setLogRailState(nav.classList.contains('wide') ? 'open' : 'wide');
+  });
+  nav.querySelectorAll('[data-go]').forEach(b=> b.addEventListener('click', (e)=>{
+    if(nav.classList.contains('tabs')) return; // first tap only opens the rail
+    e.stopPropagation();
+    goLogSection(b.dataset.go);
+    setLogRailState('tabs');
+  }));
   const active = logRailActive; logRailActive = null;
   setLogRailActive(active && logRailItems.some(it=> it.id === active) ? active : null);
   spyLogRail();
 }
-function setLogRailWide(wide){
+// Three states: 'tabs' (default, colour tabs only), 'open' (icon rail), 'wide' (names and summaries)
+function setLogRailState(state){
   const nav = el('logRail');
   if(!nav) return;
-  nav.classList.toggle('wide', wide);
+  nav.classList.toggle('tabs', state === 'tabs');
+  nav.classList.toggle('wide', state === 'wide');
+  const wide = state === 'wide';
   const menu = nav.querySelector('.rl-menu');
   if(menu){ menu.setAttribute('aria-expanded', String(wide)); menu.setAttribute('aria-label', `${wide ? 'Hide' : 'Show'} section names`); }
 }
