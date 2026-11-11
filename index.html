@@ -30315,6 +30315,30 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 .sec-row{display:flex; align-items:center; gap:10px; margin-bottom:12px}
 .sec-row .section-label{margin-bottom:0}
 #openItemsPanel > summary{gap:10px}
+/* ---- energy audit sign-off ---- */
+body.ibos-mode #signoffPanel{display:none!important}
+.so-heading{display:flex; flex-direction:column; gap:2px; min-width:0}
+.so-title{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px}
+.so-sum{font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:11px; color:var(--muted)}
+#signoffPanel input{margin-bottom:8px}
+.so-team{display:flex; flex-wrap:wrap; gap:8px; margin:-2px 0 12px}
+/* team buttons: the same pill as the log's category buttons, coloured per person */
+.so-team-btn{display:inline-flex; align-items:center; justify-content:center; gap:5px; min-height:32px; min-width:72px; padding:4px 14px;
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; letter-spacing:0.01em;
+  color:var(--paper); text-align:center; cursor:pointer; border-radius:999px; border:1.5px solid var(--cat);
+  background:var(--navy-panel-2); background:color-mix(in srgb, var(--cat) 16%, var(--navy-panel));
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:background .12s ease, transform .08s ease}
+.so-team-btn:active{transform:scale(0.97)}
+.so-team-btn:focus-visible{outline:2px solid var(--paper); outline-offset:2px}
+.so-team-btn.active{background:var(--cat); color:var(--navy-deep); font-weight:700; box-shadow:0 0 0 2px var(--navy-panel), 0 0 0 3.5px var(--cat)}
+.so-team-btn.active::before{content:'✓'; font-size:12px; font-weight:700; line-height:1}
+.so-chips{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:-2px 0 14px}
+.so-chips[hidden]{display:none}
+.so-chips-label{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted); margin-right:2px}
+.so-chip{background:none; border:1px solid rgba(255,255,255,0.18); border-radius:12px; padding:4px 10px; color:var(--paper);
+  font-family:'Inter',sans-serif; font-size:12px; cursor:pointer}
+.so-chip:focus-visible{outline:2px solid var(--copper); outline-offset:2px}
+
 /* folded: colour tabs at the edge, current one outlined. The layout of the
    icon rail is kept (same padding, same row heights, menu slot reserved), so
    each tab sits exactly level with its circle and is the same height as it. */
@@ -30361,7 +30385,7 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
 .entry-photos img.missing{opacity:0.35}
 
 /* ---- Open Items now sits after the log ---- */
-#openItemsPanel{margin-top:22px}
+#openItemsPanel, #signoffPanel{margin-top:22px}
 </style>
 </head>
 <body>
@@ -30462,6 +30486,7 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
       <div class="bi-saved" id="biSaved">Auto-saves as you type</div>
     </div>
   </details>
+
 
   <div class="panel" id="entryFormPanel">
     <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
@@ -30631,6 +30656,23 @@ body.ibos-mode #ibosMain details.panel{scroll-margin-top:10px}
         <button type="button" class="oi-copy-btn" id="oiCopyBtn">Copy list</button>
       </div>
       <div class="oi-saved" id="oiSaved">Auto-saves on this device</div>
+    </div>
+  </details>
+
+  <details class="building-info signoff-panel" id="signoffPanel" open>
+    <summary>
+      <span class="sec-head"><span class="sec-ic" style="--rc:var(--ventilation)" aria-hidden="true"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 17c3.333 -3.333 5 -6 5 -8c0 -3 -1 -3 -2 -3s-2.032 1.085 -2 3c.034 2.048 1.658 4.877 2.5 6c1.5 2 2.5 2.5 3.5 1l2 -3c.333 2.667 1.333 4 3 4c.53 0 2.639 -2 3 -2c.517 0 1.517 .667 3 2'/></svg></span><span class="so-heading"><span class="so-title">Sign-off</span><span class="so-sum" id="soSummary">Not recorded yet</span></span></span>
+      <span class="arrow" aria-hidden="true">▾</span>
+    </summary>
+    <div class="bi-body">
+      <span class="oi-field-label" id="soAuditorsLabel">Auditors on site</span>
+      <input type="text" id="soOthers" placeholder="Auditor name" autocomplete="off" aria-labelledby="soAuditorsLabel" />
+      <div class="so-team" id="soTeam" role="group" aria-label="Fill in a team member"></div>
+      <div class="so-chips" id="soChips" hidden></div>
+      <label class="oi-field-label" for="soRepName">Site representative</label>
+      <input type="text" id="soRepName" placeholder="Name" autocomplete="off" />
+      <input type="text" id="soRepRole" placeholder="Role or company (optional)" autocomplete="off" aria-label="Site representative role or company" />
+      <div class="bi-saved" id="soVisit"></div>
     </div>
   </details>
 </div>
@@ -31873,7 +31915,156 @@ async function saveBmsInfo(){
 }
 
 // Before switching surveys, write any pending edits to the survey they belong to
+/* =========================================================================
+   SIGN-OFF (energy audits)
+   -------------------------------------------------------------------------
+   Who was on site: one or more auditors and the site representative (with
+   an optional role or company). Not required, but it goes into the export
+   for drafting the report. Saved per survey at audit:<id>:signoff. Auditor
+   names are also remembered on this phone (recent-auditors) and offered as
+   tap-to-add chips. All auditors go in one box (names separated by commas).
+   The team (AUDITOR_PROFILES) have colour-coded chips, styled like the log's
+   category buttons, that fill their short name in (or take it out again);
+   anyone else is typed. The export notes give the team's full name and title.
+   ========================================================================= */
+// The team: short name shown on the chip and in the box -> full name and title in the export notes
+const AUDITOR_PROFILES = {
+  'Euan': { full:'Euan Keighley - Certified Energy Manager', color:'var(--cooling)' },
+  'Rex':  { full:'Yuanliang Zhang - Graduate Energy Engineer', color:'var(--ventilation)' }
+};
+function auditorProfileKey(name){
+  const n = String(name || '').trim().toLowerCase();
+  return Object.keys(AUDITOR_PROFILES).find(k=> k.toLowerCase() === n) || null;
+}
+function auditorExportName(name){ const k = auditorProfileKey(name); return k ? AUDITOR_PROFILES[k].full : String(name || '').trim(); }
+let signoff = { others:'', repName:'', repRole:'' }; // others = the auditor box (all names)
+let recentAuditors = [];
+let soSaveTimer = null;
+function signoffKey(){ return `audit:${currentAuditId}:signoff`; }
+function splitNames(text){ return String(text || '').split(/,|;|\n|&|\s+and\s+/i).map(s=> s.trim()).filter(Boolean); }
+function soAuditorNames(){ return splitNames(signoff.others); }
+function signoffMissing(){
+  const out = [];
+  if(!soAuditorNames().length) out.push({ field:'auditor', label:'auditor' });
+  if(!String(signoff.repName || '').trim()) out.push({ field:'rep', label:'site representative' });
+  return out;
+}
+function visitWindow(){
+  let first = Infinity, last = -Infinity;
+  entries.forEach(e=>{ const t = new Date(e.time).getTime(); if(!isNaN(t)){ first = Math.min(first, t); last = Math.max(last, t); } });
+  return isFinite(first) ? { first, last } : null;
+}
+function visitLabel(){
+  const w = visitWindow();
+  if(!w) return '';
+  const d = new Date(w.first).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  const t = (x)=> new Date(x).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  const sameDay = new Date(w.first).toDateString() === new Date(w.last).toDateString();
+  if(sameDay && t(w.first) === t(w.last)) return `${d}, ${t(w.first)}`;
+  return sameDay ? `${d}, ${t(w.first)}–${t(w.last)}`
+    : `${d} – ${new Date(w.last).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}`;
+}
+function signoffSummaryText(){
+  const n = soAuditorNames().length, rep = String(signoff.repName || '').trim();
+  if(!n && !rep) return 'Not recorded yet';
+  const parts = [n ? `${n} auditor${n === 1 ? '' : 's'}` : 'no auditor recorded'];
+  parts.push(rep ? `${rep} (site)` : 'site representative not recorded');
+  return parts.join(' · ');
+}
+async function loadSignoffForCurrentAudit(){
+  signoff = { others:'', repName:'', repRole:'' };
+  try{
+    const r = await idbStorage.get(signoffKey(), false);
+    if(r){
+      const d = JSON.parse(r.value);
+      // Earlier versions kept the team (and one box per auditor) separately: fold them into the one box
+      const names = [
+        ...(Array.isArray(d.team) ? d.team : []),
+        ...(Array.isArray(d.auditors) ? d.auditors : []),
+        ...splitNames(d.others)
+      ].map(n=> String(n || '').trim()).filter(Boolean);
+      signoff.others = names.filter((n, i)=> names.findIndex(x=> x.toLowerCase() === n.toLowerCase()) === i).join(', ');
+      signoff.repName = d.repName || '';
+      signoff.repRole = d.repRole || '';
+    }
+  }catch(e){}
+  try{ const r = await idbStorage.get('recent-auditors', false); recentAuditors = r ? JSON.parse(r.value) : []; }catch(e){ recentAuditors = []; }
+  if(!Array.isArray(recentAuditors)) recentAuditors = [];
+  renderSignoff();
+  // Open while there's something to fill in; tucked away once it's done
+  el('signoffPanel').open = signoffMissing().length > 0;
+}
+async function saveSignoff(){
+  clearTimeout(soSaveTimer); soSaveTimer = null;
+  if(!currentAuditId) return;
+  try{
+    await idbStorage.set(signoffKey(), JSON.stringify({ others: signoff.others, repName: signoff.repName, repRole: signoff.repRole }), false);
+  }catch(e){}
+}
+function scheduleSignoffSave(){ clearTimeout(soSaveTimer); soSaveTimer = setTimeout(saveSignoff, 500); }
+// Remember typed auditor names on this phone (when leaving the box, not per keystroke)
+async function rememberAuditors(names){
+  const fresh = names.map(n=> String(n || '').trim()).filter(n=> n && !auditorProfileKey(n)); // the team has its own buttons
+  if(!fresh.length) return;
+  recentAuditors = [...fresh, ...recentAuditors.filter(n=> !fresh.some(f=> f.toLowerCase() === n.toLowerCase()))].slice(0, 8);
+  try{ await idbStorage.set('recent-auditors', JSON.stringify(recentAuditors), false); }catch(e){}
+  renderSignoffChips();
+}
+function renderSignoff(){
+  const team = el('soTeam');
+  team.innerHTML = Object.keys(AUDITOR_PROFILES).map(n=>
+    `<button type="button" class="so-team-btn" data-name="${escapeHtml(n)}" aria-pressed="false" style="--cat:${AUDITOR_PROFILES[n].color}">${escapeHtml(n)}</button>`
+  ).join('');
+  team.querySelectorAll('.so-team-btn').forEach(b=> b.addEventListener('click', ()=>{
+    // Tap to fill the name into the box; tap again to take it out
+    const n = b.dataset.name, names = splitNames(signoff.others);
+    const has = names.some(x=> x.toLowerCase() === n.toLowerCase());
+    signoff.others = (has ? names.filter(x=> x.toLowerCase() !== n.toLowerCase()) : [...names, n]).join(', ');
+    el('soOthers').value = signoff.others;
+    saveSignoff();
+    updateSignoffState();
+  }));
+  el('soOthers').value = signoff.others;
+  el('soRepName').value = signoff.repName;
+  el('soRepRole').value = signoff.repRole;
+  renderSignoffChips();
+  updateSignoffState();
+}
+// Recently typed names: tap to add to the other-auditors box
+function renderSignoffChips(){
+  const wrap = el('soChips');
+  const current = soAuditorNames().map(n=> n.toLowerCase());
+  const recent = recentAuditors.filter(n=> !auditorProfileKey(n) && !current.includes(n.toLowerCase()));
+  wrap.hidden = !recent.length;
+  wrap.innerHTML = recent.length ? '<span class="so-chips-label">Recent</span>' + recent.map(n=> `<button type="button" class="so-chip" data-name="${escapeHtml(n)}">+ ${escapeHtml(n)}</button>`).join('') : '';
+  wrap.querySelectorAll('.so-chip').forEach(b=> b.addEventListener('click', ()=>{
+    signoff.others = [...splitNames(signoff.others), b.dataset.name].join(', ');
+    el('soOthers').value = signoff.others;
+    saveSignoff();
+    renderSignoffChips();
+    updateSignoffState();
+  }));
+}
+function updateSignoffState(){
+  if(!el('soSummary')) return;
+  const inBox = soAuditorNames().map(n=> n.toLowerCase());
+  el('soTeam').querySelectorAll('.so-team-btn').forEach(b=>{
+    const on = inBox.includes(b.dataset.name.toLowerCase());
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
+  el('soSummary').textContent = signoffSummaryText();
+  const v = visitLabel();
+  el('soVisit').textContent = v ? `Visit: ${v} · from your entries` : 'The visit date and times fill in from your entries.';
+  scheduleLogRail();
+}
+el('soOthers').addEventListener('input', ()=>{ signoff.others = el('soOthers').value; scheduleSignoffSave(); updateSignoffState(); });
+el('soOthers').addEventListener('change', ()=>{ rememberAuditors(splitNames(el('soOthers').value)); renderSignoffChips(); });
+el('soOthers').addEventListener('input', renderSignoffChips);
+el('soRepName').addEventListener('input', ()=>{ signoff.repName = el('soRepName').value; scheduleSignoffSave(); updateSignoffState(); });
+el('soRepRole').addEventListener('input', ()=>{ signoff.repRole = el('soRepRole').value; scheduleSignoffSave(); });
 async function flushPendingSaves(){
+  if(soSaveTimer){ await saveSignoff(); }
   if(biSaveTimer){ clearTimeout(biSaveTimer); biSaveTimer = null; await saveBuildingInfo(); }
   if(bmsSaveTimer){ clearTimeout(bmsSaveTimer); bmsSaveTimer = null; await saveBmsInfo(); }
   if(oiSaveTimer){ clearTimeout(oiSaveTimer); oiSaveTimer = null; await saveOpenItems(); }
@@ -31883,6 +32074,7 @@ function applySurveyType(){
   const type = currentSurveyType();
   const ib = type === 'ibos';
   el('biPanel').hidden = ib;
+  el('signoffPanel').hidden = ib;
   el('bmsPanel').hidden = true;          // IBOS surveys use the IBOS checklist; earlier BMS answers are carried into it
   el('ibosApp').hidden = !ib;
   document.body.classList.toggle('ibos-mode', ib);
@@ -32241,6 +32433,7 @@ async function openAudit(id){
   await flushPendingSaves();
   await setActiveAuditId(id);
   await loadBuildingInfoForCurrentAudit();
+  await loadSignoffForCurrentAudit();
   await loadBmsForCurrentAudit();
   applySurveyType();
   await loadEntriesForCurrentAudit();
@@ -32425,6 +32618,7 @@ function renderEntries(){
   const list = el('entriesList');
   el('entryCount').textContent = entries.length;
   scheduleLogRail();
+  updateSignoffState();
   forgetThumbs(list);
   if(entries.length === 0){
     list.innerHTML = '<div class="empty-state">No entries yet. Log your first observation above.</div>';
@@ -32589,6 +32783,7 @@ function renderEntries(){
    ========================================================================= */
 // Icons from Tabler Icons (MIT licence, tabler.io/icons), embedded so they work offline
 const LOG_RAIL_ICON = {
+ "_sign": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M3 17c3.333 -3.333 5 -6 5 -8c0 -3 -1 -3 -2 -3s-2.032 1.085 -2 3c.034 2.048 1.658 4.877 2.5 6c1.5 2 2.5 2.5 3.5 1l2 -3c.333 2.667 1.333 4 3 4c.53 0 2.639 -2 3 -2c.517 0 1.517 .667 3 2'/></svg>",
  "HVAC": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M12 13m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0'/><path d='M14.167 10.5c.722 -1.538 1.156 -3.043 1.303 -4.514c.22 -1.63 -.762 -2.986 -3.47 -2.986s-3.69 1.357 -3.47 2.986c.147 1.471 .581 2.976 1.303 4.514'/><path d='M13.169 16.751c.97 1.395 2.057 2.523 3.257 3.386c1.3 1 2.967 .833 4.321 -1.512c1.354 -2.345 .67 -3.874 -.85 -4.498c-1.348 -.608 -2.868 -.985 -4.562 -1.128'/><path d='M8.664 13c-1.693 .143 -3.213 .52 -4.56 1.128c-1.522 .623 -2.206 2.153 -.852 4.498s3.02 2.517 4.321 1.512c1.2 -.863 2.287 -1.991 3.258 -3.386'/></svg>",
  "Water": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546z'/></svg>",
  "Controls": "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M14 6m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/><path d='M4 6l8 0'/><path d='M16 6l4 0'/><path d='M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/><path d='M4 12l2 0'/><path d='M10 12l10 0'/><path d='M17 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/><path d='M4 18l11 0'/><path d='M19 18l1 0'/></svg>",
@@ -32636,6 +32831,10 @@ function logRailDefs(){
   const outstanding = outstandingItems().length;
   items.push({ id:'openItemsPanel', icon: LOG_RAIL_ICON._open, glyph:'?', short:'Open', full:'Open items', color:'var(--questions)',
     badge: outstanding ? String(outstanding) : '', sub: outstanding ? `${outstanding} outstanding` : (openItems.items.length ? 'All answered' : 'None yet') });
+  if(!el('signoffPanel').hidden){
+    items.push({ id:'signoffPanel', icon: LOG_RAIL_ICON._sign, glyph:'S', short:'Sign-off', full:'Sign-off', color:'var(--ventilation)',
+      badge: '', warn: false, sub: signoffSummaryText() });
+  }
   return items;
 }
 function buildLogRail(){
@@ -33462,11 +33661,27 @@ el('exportBtn').addEventListener('click', async ()=>{
 
   const bmsModel = bmsExportModel();
 
+  // Sign-off: who was on site (energy audits); empty fields are left out
+  const soNames = isIbosExport ? [] : soAuditorNames().map(auditorExportName);
+  const soRep = isIbosExport ? '' : [String(signoff.repName || '').trim(), String(signoff.repRole || '').trim()].filter(Boolean).join(', ');
+  const soVisit = isIbosExport ? '' : visitLabel();
+  const soRows = [
+    ['Visit', soVisit],
+    [soNames.length > 1 ? 'Auditors' : 'Auditor', soNames.length > 1 ? soNames : soNames.join('')],
+    ['Site representative', String(signoff.repName || '').trim() ? soRep : '']
+  ].filter(([,v])=> v);
+
   // ---------- 1) Markdown (guaranteed plain-text, easiest for Claude to read back) ----------
   let md = `# Survey Notes: ${project}\n\n${firstLoggedLabel}\n\n`;
   if(hasBuildingInfo){
     md += `## Building Information\n\n`;
     biRows.forEach(([label, value])=>{ md += `**${label}:** ${value}\n\n`; });
+  }
+  if(soRows.length){
+    md += `## Sign-off\n\n`;
+    soRows.forEach(([label, value])=>{
+      md += Array.isArray(value) ? `**${label}:**\n\n${value.map(v=> `- ${v}`).join('\n')}\n\n` : `**${label}:** ${value}\n\n`;
+    });
   }
   if(bmsModel) md += bmsToMarkdown(bmsModel);
 
@@ -33482,6 +33697,18 @@ el('exportBtn').addEventListener('click', async ()=>{
         docxRun(`${label}: `, {bold:true, size:SIZE_NORMAL}),
         docxRun(value, {size:SIZE_NORMAL})
       ]));
+    });
+    paragraphs.push(docxParagraph([]));
+  }
+  if(soRows.length){
+    paragraphs.push(docxParagraph([ docxRun('Sign-off', {bold:true, size:SIZE_HEADER}) ]));
+    soRows.forEach(([label, value])=>{
+      if(Array.isArray(value)){
+        paragraphs.push(docxParagraph([ docxRun(`${label}:`, {bold:true, size:SIZE_NORMAL}) ]));
+        value.forEach(v=> paragraphs.push(docxParagraph([ docxRun(`•  ${v}`, {size:SIZE_NORMAL}) ])));
+      } else {
+        paragraphs.push(docxParagraph([ docxRun(`${label}: `, {bold:true, size:SIZE_NORMAL}), docxRun(value, {size:SIZE_NORMAL}) ]));
+      }
     });
     paragraphs.push(docxParagraph([]));
   }
@@ -33501,6 +33728,16 @@ el('exportBtn').addEventListener('click', async ()=>{
   if(hasBuildingInfo){
     pdfText('Building Information', { bold:true, size:SIZE_HEADER, gapAfter:4 });
     biRows.forEach(([label, value])=> pdfText(`${label}: ${value}`, { size:SIZE_NORMAL, gapAfter:2 }));
+    pdfW.gap(8);
+  }
+  if(soRows.length){
+    pdfText('Sign-off', { bold:true, size:SIZE_HEADER, gapAfter:4 });
+    soRows.forEach(([label, value])=>{
+      if(Array.isArray(value)){
+        pdfText(`${label}:`, { size:SIZE_NORMAL, gapAfter:2 });
+        value.forEach(v=> pdfText(`•  ${v}`, { size:SIZE_NORMAL, gapAfter:2 }));
+      } else pdfText(`${label}: ${value}`, { size:SIZE_NORMAL, gapAfter:2 });
+    });
     pdfW.gap(8);
   }
   if(bmsModel) bmsToPdf(bmsModel, pdfW);
